@@ -125,6 +125,8 @@ namespace Game.VideoFlow
         internal sealed class FlowGraph : IVideoFlowGraph, IFlowValueGraph
         {
             readonly Dictionary<Tuple<string,string>,IReadOnlyList<IFlowEdge>> outgoing = new Dictionary<Tuple<string,string>,IReadOnlyList<IFlowEdge>>();
+            readonly HashSet<string> executableEntries = new HashSet<string>(StringComparer.Ordinal);
+            internal bool IsExecutableEntry(string nodeId) { return executableEntries.Contains(nodeId); }
             readonly Dictionary<string,ValueNodeDefinition> valueNodes=new Dictionary<string,ValueNodeDefinition>();
             readonly Dictionary<string,ValueTypeDefinition> valueTypes;
             readonly Dictionary<Tuple<string,string>,PortDefinition> outputs=new Dictionary<Tuple<string,string>,PortDefinition>();
@@ -138,6 +140,8 @@ namespace Game.VideoFlow
                 foreach(var n in graph.Nodes)
                 {
                     INodeDefinition d;registry.TryGet(n.TypeId,out d);
+                    var value = d as ValueNodeDefinition;
+                    if ((value == null || value.Kind != ValueNodeKind.Cell) && registry.GetPorts(n).Any(p => p.Kind == PortKind.Control && p.Direction == PortDirection.Input)) executableEntries.Add(n.Id);
                     if(d is ValueNodeDefinition)valueNodes.Add(n.Id,(ValueNodeDefinition)d);
                     foreach(var p in registry.GetPorts(n).Where(p=>p.Direction==PortDirection.Output)) outputs.Add(Tuple.Create(n.Id,p.Id),p);
                 }

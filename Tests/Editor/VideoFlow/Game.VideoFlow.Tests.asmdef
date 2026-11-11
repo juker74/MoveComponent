@@ -1,6 +1,7 @@
 {
   "name": "Game.VideoFlow.Tests",
   "references": [
+    "GameFrameX.Runtime",
     "Game.VideoFlow.Contracts",
     "Game.VideoFlow.Runtime",
     "GameFrameX.NodeComposer.Runtime",

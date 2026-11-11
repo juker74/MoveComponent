@@ -2,6 +2,7 @@
   "name": "Game.VideoFlow.Runtime",
   "rootNamespace": "Game.VideoFlow",
   "references": [
+    "GameFrameX.Runtime",
     "Game.VideoFlow.Contracts",
     "GameFrameX.NodeComposer.Runtime",
     "GameFrameX.NodeComposer.Video.Runtime",

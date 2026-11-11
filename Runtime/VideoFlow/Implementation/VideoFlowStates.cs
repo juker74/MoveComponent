@@ -1,8 +1,9 @@
 using System;
+using Game.VideoFlow;
 
-namespace Game.VideoFlow
+namespace GameFrameX.Movie.Runtime
 {
-    public sealed partial class VideoFlowDriver
+    public sealed partial class MovieManager
     {
         void ChangeState(FlowState next)
         {
@@ -18,9 +19,9 @@ namespace Game.VideoFlow
 
         abstract class FlowState
         {
-            protected readonly VideoFlowDriver Driver;
+            protected readonly MovieManager Driver;
             public FlowPhase Phase { get; }
-            protected FlowState(VideoFlowDriver driver, FlowPhase phase) { Driver = driver; Phase = phase; }
+            protected FlowState(MovieManager driver, FlowPhase phase) { Driver = driver; Phase = phase; }
             public virtual void Enter() { }
             public virtual void Tick(float delta, float real) { }
             public virtual void Leave() { }
@@ -28,13 +29,13 @@ namespace Game.VideoFlow
 
         sealed class InactiveState : FlowState
         {
-            public InactiveState(VideoFlowDriver driver, FlowPhase phase) : base(driver, phase) { }
+            public InactiveState(MovieManager driver, FlowPhase phase) : base(driver, phase) { }
         }
 
         sealed class PreparingVideoState : FlowState
         {
             readonly Action open;
-            public PreparingVideoState(VideoFlowDriver driver, Action open) : base(driver, FlowPhase.PreparingVideo) { this.open = open; }
+            public PreparingVideoState(MovieManager driver, Action open) : base(driver, FlowPhase.PreparingVideo) { this.open = open; }
             public override void Enter()
             {
                 open();
@@ -58,7 +59,7 @@ namespace Game.VideoFlow
 
         sealed class PlayingVideoState : FlowState
         {
-            public PlayingVideoState(VideoFlowDriver driver) : base(driver, FlowPhase.PlayingVideo) { }
+            public PlayingVideoState(MovieManager driver) : base(driver, FlowPhase.PlayingVideo) { }
             public override void Tick(float delta, float real)
             {
                 Driver.UpdateVideo(delta, real);
@@ -69,7 +70,7 @@ namespace Game.VideoFlow
         sealed class SwitchingVideoState : FlowState
         {
             readonly Action close, open;
-            public SwitchingVideoState(VideoFlowDriver driver, Action close, Action open) : base(driver, FlowPhase.SwitchingVideo)
+            public SwitchingVideoState(MovieManager driver, Action close, Action open) : base(driver, FlowPhase.SwitchingVideo)
             { this.close = close; this.open = open; }
             public override void Enter()
             {
@@ -81,7 +82,7 @@ namespace Game.VideoFlow
         sealed class InteractionState : FlowState
         {
             readonly Action enter;
-            public InteractionState(VideoFlowDriver driver, Action enter = null) : base(driver, FlowPhase.Interacting) { this.enter = enter; }
+            public InteractionState(MovieManager driver, Action enter = null) : base(driver, FlowPhase.Interacting) { this.enter = enter; }
             public override void Enter() { enter?.Invoke(); }
             public override void Tick(float delta, float real) { Driver.UpdateInteractions(delta, real); }
         }

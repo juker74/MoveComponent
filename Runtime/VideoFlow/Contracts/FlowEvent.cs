@@ -14,6 +14,7 @@ namespace Game.VideoFlow
         public FlowEventKind Kind { get; }
         public FlowPhase Phase { get; }
         public string GraphId { get; }
+        public string ChapterId { get; }
         public string NodeId { get; }
         public long ActivationId { get; }
         public string InputPortId { get; }
@@ -26,11 +27,12 @@ namespace Game.VideoFlow
         public FlowEvent(FlowEventKind kind, string graphId, string nodeId = null,
             long activationId = 0, string inputPortId = null, string outputPortId = null,
             float deltaTime = 0, float realDeltaTime = 0,
-            string errorCode = null, string errorMessage = null, FlowPhase phase = FlowPhase.Idle)
+            string errorCode = null, string errorMessage = null, FlowPhase phase = FlowPhase.Idle, string chapterId = null)
         {
             Kind = kind;
             Phase = phase;
             GraphId = graphId;
+            ChapterId = chapterId;
             NodeId = nodeId;
             ActivationId = activationId;
             InputPortId = inputPortId;
