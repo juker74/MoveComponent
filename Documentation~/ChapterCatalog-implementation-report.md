@@ -1,6 +1,6 @@
 # Chapter catalog implementation report
 
-Status: implementation, full local isolated Unity verification and independent review complete. Remote Git publication and target-project verification remain with the controller. No commits or remote publication performed by this worker.
+Status: delivered in private remote Git package v1.1.0, code commit 2b008ad8fad7d3af61745c8d812573da35e4ea72. Implementation, independent review, isolated local-file and remote-Git Unity test runs, and target GameFrameX.Unity integration verification are complete. Release publication was performed by the controller; this worker only updates the documentation follow-up and does not change the published tag.
 
 ## Delivered
 
@@ -28,7 +28,11 @@ The controller's focused rerun passed both cases, 2/2 with no failures: /tmp/Mov
 
 The round-trip check also unloads and reloads persisted catalog/graph assets before asserting identities and entry selections; that check passed in /tmp/MoveComponent-chapters-tests-verified.xml (106 tests, 105 passed, with only the import Undo regression failing).
 
-The final isolated Unity 2022.3.62f3 run passed all 107 tests across five EditMode assemblies, with zero failures and zero skips. Evidence: /tmp/MoveComponent-chapters-complete.xml. Per assembly: Game.VideoFlow.Tests 42/42, Game.VideoFlow.Unity.Tests 8/8, GameFrameX.NodeComposer.Tests 16/16, GameFrameX.NodeComposer.Video.Editor.Tests 30/30 and GameFrameX.NodeComposer.Video.Tests 11/11. The package was loaded through local file UPM; this result does not claim v1.1.0 remote Git or target GameFrameX.Unity verification. The controller confirmed final independent review passed.
+The final isolated Unity 2022.3.62f3 local-file run passed all 107 tests across five EditMode assemblies, with zero failures and zero skips. Evidence: /tmp/MoveComponent-chapters-complete.xml. Per assembly: Game.VideoFlow.Tests 42/42, Game.VideoFlow.Unity.Tests 8/8, GameFrameX.NodeComposer.Tests 16/16, GameFrameX.NodeComposer.Video.Editor.Tests 30/30 and GameFrameX.NodeComposer.Video.Tests 11/11. The controller confirmed final independent review passed.
+
+The isolated project then installed the private remote Git package at v1.1.0, resolving code commit 2b008ad8fad7d3af61745c8d812573da35e4ea72. The full five-assembly suite passed again with 107/107, zero failures and zero skips. Evidence: /tmp/MoveComponent-chapters-git.xml. The published v1.1.0 tag remains fixed at that code revision; these final validation notes are a later documentation update.
+
+The target GameFrameX.Unity project refreshed successfully with package source Git and version 1.1.0. Its verification report confirms all 15 package assemblies, seven bundled Editor resources, the retained ComposerGraph script GUID 22a41af39b6684b1087cc91c914c50b7, existing graph asset loading, ChapterCatalogInspector binding, both Tools menu entries and the Chapter Catalog CreateAssetMenu. Evidence: /tmp/MoveComponent-chapter-project-report.json (status Passed). Temporary validation helpers and metadata were removed. This target-project check verifies integration and Editor entry points; the 107-test results above are from the isolated project.
 
 `python3 Tools~/validate_package.py` currently passes: 507 C# files, 15 assemblies, 764 unique GUIDs. `git diff --check` passes.
 

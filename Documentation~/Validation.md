@@ -1,10 +1,10 @@
 # 包导出验证
 
-## 1.1.0 — 章节目录编辑器（本地隔离验证）
+## 1.1.0 — 章节目录编辑器
 
 验证日期：2026-11-11。Unity 版本：2022.3.62f3。
 
-独立验证工程通过 UPM `file:` 加载本次包源码，启用图形环境运行全部 5 个 EditMode 测试程序集，共 **107 项：107 通过、0 失败、0 跳过**。原有驱动和节点测试保持通过，新增章节目录覆盖严格 JSON、顺序与稳定 ID、目录编辑 Undo、入口校验、完整 bundle 导入导出、失败保护、资产持久化后卸载重载，以及导入不干扰此前用户 Undo。独立代码审查已通过。
+独立验证工程先通过 UPM `file:` 加载本次包源码，再改用私有远端 Git 包 `v1.1.0`，解析到代码提交 `2b008ad8fad7d3af61745c8d812573da35e4ea72`。两次均启用图形环境运行全部 5 个 EditMode 测试程序集，各 **107 项：107 通过、0 失败、0 跳过**。原有驱动和节点测试保持通过，新增章节目录覆盖严格 JSON、顺序与稳定 ID、目录编辑 Undo、入口校验、完整 bundle 导入导出、失败保护、资产持久化后卸载重载，以及导入不干扰此前用户 Undo。独立代码审查已通过。
 
 | 程序集 | 通过 | 失败 |
 | --- | --- | --- |
@@ -14,11 +14,13 @@
 | GameFrameX.NodeComposer.Video.Editor.Tests.dll | 30 | 0 |
 | GameFrameX.NodeComposer.Video.Tests.dll | 11 | 0 |
 
-最终 NUnit 结果：`/tmp/MoveComponent-chapters-complete.xml`。结构检查通过：**507 个 C# 文件、15 个程序集、764 个唯一 GUID**；包资源与声明的程序集引用完整。原插件源码、资源与已有 GUID 未修改。
+本地 `file:` NUnit 结果：`/tmp/MoveComponent-chapters-complete.xml`；远端 Git NUnit 结果：`/tmp/MoveComponent-chapters-git.xml`。结构检查通过：**507 个 C# 文件、15 个程序集、764 个唯一 GUID**；包资源与声明的程序集引用完整。原插件源码、资源与已有 GUID 未修改。
 
 导入构造先放入独立 Undo 组，再回退临时图并恢复为最终资产；NodeCanvas 在回退临时空图时会记录空 JSON 警告，最终图数据和此前的用户 Undo 均通过回归验证。此次仅扩展章节目录编辑与数据交换，不包含章节执行器或章节切换业务。
 
-**v1.1.0 的远端 Git 安装和目标 GameFrameX.Unity 工程验证尚未执行**，本记录只证明本地 `file:` 包在隔离工程中的结果。以下版本记录保留各自当时的验证结论，不作为本次 Git 验证证明。
+目标 GameFrameX.Unity 工程刷新后也成功安装该私有 Git 包，报告确认 `status=Passed`、`version=1.1.0`、`packageSource=Git`：15 个包内程序集均存在；7 个 Editor Resources 成功加载；原有 ComposerGraph 资产可加载，脚本 GUID `22a41af39b6684b1087cc91c914c50b7` 继续解析到包内脚本；章节目录的自定义 Inspector 正确绑定；`Tools/GameFrameX/Node Composer/创建章节目录`、`Tools/GameFrameX/Node Composer/导入章节目录 JSON` 和 `Assets/Create/GameFrameX/Chapter Catalog` 均存在。目标工程证据：`/tmp/MoveComponent-chapter-project-report.json`。临时验证脚本及其 `.meta` 已清理。目标工程完成的是编译、资源、资产与编辑器入口集成检查；107 项完整测试结果来自上述隔离工程。
+
+已发布的 `v1.1.0` 标签固定指向上述代码提交；本节最终验证结论作为后续文档记录补充，不改动该标签。以下历史版本记录保留各自当时的验证结论。
 
 ## 1.0.1 — 内置 ParadoxNotion
 

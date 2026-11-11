@@ -2,7 +2,7 @@
   "date": "2026-11-11",
   "unity": "2022.3.62f3",
   "mode": "EditMode, isolated project, graphics enabled",
-  "packageSource": "Local file UPM in an isolated project; private remote Git installation and target GameFrameX.Unity verification for v1.1.0 are pending",
+  "packageSource": "Private remote Git UPM v1.1.0 verified in isolated and GameFrameX.Unity target projects; isolated local file UPM also verified",
   "dependencies": "Pinned versions from dependency-sources.json; isolated project uses existing GameFrameX/Unity package caches. NodeCanvas and CanvasCore come from this package.",
   "result": "Passed",
   "total": 107,
@@ -38,9 +38,12 @@
   },
   "structureValidation": "507 C# sources, 15 assemblies, 764 unique GUIDs; all package resources and declared references present",
   "version": "1.1.0",
-  "testEvidence": "MoveComponent-chapters-complete.xml",
-  "remoteGitValidation": "Pending for v1.1.0",
-  "targetProjectValidation": "Pending for v1.1.0",
+  "testEvidence": "MoveComponent-chapters-git.xml",
+  "localFileTestEvidence": "MoveComponent-chapters-complete.xml",
+  "gitTag": "v1.1.0",
+  "gitCommit": "2b008ad8fad7d3af61745c8d812573da35e4ea72",
+  "remoteGitValidation": "Passed: isolated private remote Git package v1.1.0; 107/107 EditMode tests across five assemblies, zero failures and zero skips",
+  "targetProjectValidation": "Passed: GameFrameX.Unity version 1.1.0 from Git; compilation, package resources, existing graph asset/script and chapter Editor entry points verified",
   "compiledAssemblies": [
     "ParadoxNotion",
     "NodeCanvas",
@@ -59,6 +62,33 @@
     "Game.Framework.MovieUI"
   ],
   "validatorRegression": "Passed: bundled GUID target resolves; unknown GUID target rejected",
+  "editorResources": [
+    "StyleSheet/StyleSheetDark",
+    "StyleSheet/StyleSheetLight",
+    "TypeIcons/Implicit/System.Object",
+    "Manual",
+    "Resources",
+    "Support",
+    "Community"
+  ],
+  "targetProjectEvidence": {
+    "report": "MoveComponent-chapter-project-report.json",
+    "status": "Passed",
+    "packageSource": "Git",
+    "version": "1.1.0",
+    "graphScriptPath": "Packages/com.gameframex.unity.movecomponent/Editor/NodeComposer/ComposerGraph.cs",
+    "graphScriptGuid": "22a41af39b6684b1087cc91c914c50b7",
+    "existingGraphAsset": "Loaded successfully",
+    "catalogType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogAsset",
+    "boundInspectorType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogInspector",
+    "inspectorTargetMatched": true,
+    "verifiedMenuItems": [
+      "Tools/GameFrameX/Node Composer/创建章节目录",
+      "Tools/GameFrameX/Node Composer/导入章节目录 JSON"
+    ],
+    "catalogCreateMenu": "Assets/Create/GameFrameX/Chapter Catalog",
+    "temporaryValidationHelpersRemoved": true
+  },
   "importUndo": "Temporary graph construction is reverted within its isolated group before final asset creation; prior user Undo and imported graph data are preserved. NodeCanvas emits empty-JSON warnings while reverting temporary graphs.",
   "previousVersionValidation": {
     "version": "1.0.1",

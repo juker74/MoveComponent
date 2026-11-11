@@ -31,6 +31,6 @@ Files: Runtime/VideoNodes/ChapterCatalogDocument.cs and ChapterCatalogJsonCodec.
 
 ## Task 2: integrate and verify the package revision
 
-- [ ] Integrate reviewed changes into /Users/user/MoveComponent without touching unrelated project edits.
-- [ ] Make the current Unity project consume the verified package revision while preserving Git-based package installation; verify compilation and entry menus in that project.
-- [ ] Record exact test results, revision and user instructions.
+- [x] Integrate reviewed changes into /Users/user/MoveComponent without touching unrelated project edits.
+- [x] Make the current Unity project consume the verified package revision while preserving Git-based package installation; verify compilation and entry menus in that project.
+- [x] Record exact test results, revision and user instructions.

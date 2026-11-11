@@ -282,11 +282,12 @@
   "external": [],
   "packageVersion": "1.1.0",
   "targetUnity": "2022.3.62f3",
-  "validationStatus": "1.1.0 local file UPM validation passed in an isolated Unity 2022.3.62f3 project: 107/107 EditMode tests across 5 test assemblies; structure validation passed with 507 C# sources, 15 assemblies and 764 unique GUIDs. Private remote Git installation and target GameFrameX.Unity verification for v1.1.0 are pending. See Validation.md for separate historical v1.0.1 Git validation.",
+  "validationStatus": "1.1.0 local file UPM and private remote Git UPM validation passed in an isolated Unity 2022.3.62f3 project: 107/107 EditMode tests across 5 test assemblies in each run. Target GameFrameX.Unity Git-package integration passed: version 1.1.0, 15 package assemblies, 7 bundled Editor resources, retained ComposerGraph asset/script GUID, ChapterCatalogInspector binding and all chapter menu entries. Structure validation passed with 507 C# sources, 15 assemblies and 764 unique GUIDs. Evidence: MoveComponent-chapters-complete.xml, MoveComponent-chapters-git.xml and MoveComponent-chapter-project-report.json; see Validation.md.",
   "repository": {
     "url": "https://github.com/juker74/MoveComponent.git",
     "visibility": "private",
     "tag": "v1.1.0",
+    "commit": "2b008ad8fad7d3af61745c8d812573da35e4ea72",
     "authentication": "Use existing Git credentials for an authorized account; never embed a token in the URL."
   },
   "bundled": [
