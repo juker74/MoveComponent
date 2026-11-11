@@ -29,6 +29,7 @@ namespace GameFrameX.Movie.Runtime
         static readonly IReadOnlyDictionary<string, object> EmptyValues =
             new System.Collections.ObjectModel.ReadOnlyDictionary<string, object>(new Dictionary<string, object>());
         IMovieManager manager;
+        string pendingConfiguredChapterId;
         bool changing, destroyed, dependenciesConfigured;
         int cleanupVersion;
 
@@ -103,6 +104,7 @@ namespace GameFrameX.Movie.Runtime
                     }
                     if (!ids.Contains(candidate.StartChapterId))
                         return GraphResult<bool>.Fail("ChapterBinding", "默认章节缺少图绑定: " + candidate.StartChapterId);
+                    pendingConfiguredChapterId = candidate.StartChapterId;
                 }
                 finally { candidate.UnloadCatalog(); }
 
@@ -137,7 +139,7 @@ namespace GameFrameX.Movie.Runtime
                 return result.Success && (!Available || version != cleanupVersion) ? Cancelled() : result;
             }
             catch (Exception e) { return GraphResult<bool>.Fail("MovieComponent", e.Message); }
-            finally { changing = false; }
+            finally { pendingConfiguredChapterId = null; changing = false; }
         }
 
         void EnsureDependencies()
@@ -179,7 +181,7 @@ namespace GameFrameX.Movie.Runtime
         public void Stop() { cleanupVersion++; manager?.Stop(); }
         public void UnloadChapter(string chapterId)
         {
-            if (chapterId != null && chapterId == manager?.CurrentChapterId) cleanupVersion++;
+            if (chapterId != null && (chapterId == manager?.CurrentChapterId || chapterId == pendingConfiguredChapterId)) cleanupVersion++;
             manager?.UnloadChapter(chapterId);
         }
         public void UnloadAllChapters() { cleanupVersion++; manager?.UnloadAllChapters(); }

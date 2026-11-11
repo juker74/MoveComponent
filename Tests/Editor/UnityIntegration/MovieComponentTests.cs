@@ -205,6 +205,35 @@ namespace Game.VideoFlow.Tests
             }
         }
 
+        [TestCase(FlowEventKind.FlowStopped)]
+        [TestCase(FlowEventKind.NodeExited)]
+        public void ConfiguredPlayHonorsPendingTargetUnloadDuringOldChapterCleanup(FlowEventKind trigger)
+        {
+            using (var scene = new Scene())
+            {
+                AssertSuccess(scene.Component.Play());
+                AssertSuccess(scene.Component.PlayChapter("a"));
+                Assert.That(scene.Component.CurrentChapterId, Is.EqualTo("a"));
+                bool requested = false;
+                scene.Component.EventRaised += e =>
+                {
+                    if (e.Kind != trigger || requested) return;
+                    requested = true;
+                    scene.Component.UnloadChapter("b");
+                };
+                var result = scene.Component.Play();
+                Assert.That(requested, Is.True);
+                Assert.That(result.Success, Is.False);
+                Assert.That(result.Issues[0].Code, Is.EqualTo("FlowState"));
+                Assert.That(scene.Component.Status, Is.EqualTo(FlowStatus.Empty));
+                Assert.That(scene.Component.CurrentChapterId, Is.Null);
+                Assert.That(scene.Component.CurrentVideo, Is.Null);
+                Assert.That(scene.Component.ActiveNodes, Is.Empty);
+                Assert.That(scene.Component.LoadedChapterIds, Does.Not.Contain("b"));
+                Assert.That(scene.Players, Is.Empty);
+            }
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public void DisableOrDestroyFromStopEventCannotRevivePlayback(bool destroy)
