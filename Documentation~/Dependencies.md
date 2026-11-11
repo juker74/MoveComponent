@@ -2,7 +2,7 @@
 
 ## GameFrameX 依赖
 
-包内以当前已验证版本固定相关依赖，包括 UI 引入的传递依赖版本，以避免新项目解析到不同的组合。下列 Git 版本标签已通过 git ls-remote 核对，提交号保存在 dependency-sources.json。
+GameFrameX 依赖沿用 1.0.0 历史验证固定的版本组合，包括 UI 引入的传递依赖版本，以避免新项目解析到不同的组合。下列 Git 版本标签此前已通过 git ls-remote 核对，提交号保存在 dependency-sources.json。1.0.1 内置插件后的整包验证状态见 Validation.md。
 
 | 包名 | 版本 | Git 安装地址 |
 | --- | --- | --- |
@@ -22,17 +22,19 @@
 
 推荐方式：在宿主项目合并 GameFrameX scoped registry，再通过 Git URL 安装 MoveComponent。配置示例见 project-manifest.registry.example.json。
 
-全 Git 方式：合并 project-manifest.git.example.json 到宿主 manifest.dependencies，它包含以上全部 GameFrameX 直接/传递依赖，使用已核对标签；Unity 自有包仍由 Unity registry 提供。MoveComponent 地址是待替换示例，不代表已经发布。
+全 Git 方式：合并 project-manifest.git.example.json 到宿主 manifest.dependencies，它包含以上全部 GameFrameX 直接/传递依赖，使用已核对标签；Unity 自有包仍由 Unity registry 提供。MoveComponent 使用私有 Git 地址 `https://github.com/juker74/MoveComponent.git#v1.0.1`；访问者需要仓库权限与现有 Git 凭据，不要把 token 放进 URL。
 
-## NodeCanvas / ParadoxNotion
+## 内置 NodeCanvas / ParadoxNotion
 
-- 必需程序集：`ParadoxNotion`（含 NodeCanvas.Framework 与 NodeCanvas.Editor）。
-- 本次验证 CanvasCore 版本：`3.30`，取自已安装源码的 FRAMEWORK_VERSION。
-- 官方来源：https://nodecanvas.paradoxnotion.com/
-- Git 地址：本次安装文件没有提供可声明的 Git URL 或 UPM 包名，因此没有编造 Git 依赖。需要使用者单独安装 NodeCanvas / CanvasCore。
-- 插件及其资源未复制进 MoveComponent 仓库；仅在隔离验证项目中使用原安装副本。
+- 完整源码与资源位置：`Plugins/ParadoxNotion`，包括 `CanvasCore` 和 `NodeCanvas`，无需单独安装。
+- 程序集：`ParadoxNotion`（含 NodeCanvas.Framework 与 NodeCanvas.Editor）和 `NodeCanvas`；保留原程序集名称与 `.meta` GUID。
+- CanvasCore 版本：`3.30`，取自内置源码 `CanvasCore/Framework/Runtime/Graphs/Internal/GraphSource.cs` 的 `FRAMEWORK_VERSION`。内置布局已在 Unity 2022.3.62f3 验证，详情见 Validation.md。
+- 原作者 / 来源：Gavalakis Evangelos / ParadoxNotion，https://nodecanvas.paradoxnotion.com/ 。
+- 分发方式：随本私有仓库的 MoveComponent `v1.0.1` 一起安装；原安装文件没有独立的 Git URL 或 UPM 包名，不额外声明虚构的插件依赖。
+- 宿主项目若已有 `Assets/Plugins/ParadoxNotion` 或其他 NodeCanvas / CanvasCore 副本，先将重复插件移出 `Assets` 并备份到工程外，避免重复 GUID、程序集和类型。
+- 许可与署名：见仓库根目录 `Third Party Notices.md`；保留原作者信息和 FullSerializer 的原始 MIT 许可文本，包根 Apache-2.0 不覆盖 NodeCanvas / CanvasCore。
 
-NodeCanvas 安装中还包含 Unity AI、Physics、Physics2D 的引用，MoveComponent package.json 已补齐相应内置模块声明。
+内置 NodeCanvas 使用 Unity AI、Physics、Physics2D 等模块，MoveComponent package.json 保留相应内置模块声明。
 
 ## Unity 依赖
 
@@ -63,4 +65,4 @@ Unity 自有模块与 Scriptable Build Pipeline 等通过 Unity registry/编辑�
 
 ## 兼容范围
 
-本版本验证目标为 Unity 2022.3.62f3 与表中的依赖版本组合。未宣称在所有 Unity / NodeCanvas / GameFrameX 版本上验证通过。程序集名称保持不变，原项目已有同一模块副本时需先迁移重复源码。
+1.0.0 的历史验证环境为 Unity 2022.3.62f3 与表中的依赖版本组合，当时 NodeCanvas 单独安装。1.0.1 完整内置插件的编译、资源加载和 87 项测试已通过，具体结果见 Validation.md。未宣称在所有 Unity / NodeCanvas / GameFrameX 版本上验证通过。程序集名称保持不变，原项目已有同一模块副本时需先迁移重复源码。

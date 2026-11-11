@@ -2,8 +2,8 @@
   "date": "2026-11-11",
   "unity": "2022.3.62f3",
   "mode": "EditMode, isolated project, graphics enabled",
-  "packageSource": "Local Git UPM URL with version tag, installed in Library/PackageCache; local file UPM also verified",
-  "dependencies": "Installed versions from dependency-sources.json; isolated project uses offline local package cache sources. NodeCanvas installed separately.",
+  "packageSource": "Local file UPM package; complete bundled ParadoxNotion; isolated project has no local plugin copy",
+  "dependencies": "Pinned versions from dependency-sources.json; isolated project uses existing GameFrameX/Unity package caches. NodeCanvas and CanvasCore come from this package.",
   "result": "Passed",
   "total": 87,
   "passed": 87,
@@ -36,5 +36,33 @@
       "failed": "0"
     }
   },
-  "structureValidation": "46 C# sources, 13 assemblies, 86 unique GUIDs; no machine-specific source paths"
+  "structureValidation": "501 C# sources, 15 assemblies, 758 unique GUIDs; all 1244 original plugin files and root metadata preserved",
+  "version": "1.0.1",
+  "compiledAssemblies": [
+    "ParadoxNotion",
+    "NodeCanvas",
+    "Game.VideoFlow.Tests",
+    "GameFrameX.NodeComposer.Video.Editor",
+    "GameFrameX.NodeComposer.Video.Editor.Tests",
+    "Game.Framework.VideoFlow",
+    "GameFrameX.NodeComposer.Editor",
+    "Game.VideoFlow.Contracts",
+    "GameFrameX.NodeComposer.Runtime",
+    "Game.VideoFlow.Unity.Tests",
+    "GameFrameX.NodeComposer.Video.Tests",
+    "Game.VideoFlow.Runtime",
+    "GameFrameX.NodeComposer.Video.Runtime",
+    "GameFrameX.NodeComposer.Tests",
+    "Game.Framework.MovieUI"
+  ],
+  "editorResources": [
+    "StyleSheet/StyleSheetDark",
+    "StyleSheet/StyleSheetLight",
+    "TypeIcons/Implicit/System.Object",
+    "Manual",
+    "Resources",
+    "Support",
+    "Community"
+  ],
+  "validatorRegression": "Passed: bundled GUID target resolves; unknown GUID target rejected"
 }

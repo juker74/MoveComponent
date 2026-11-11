@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.gameframex.unity.movecomponent": "https://github.com/juker74/MoveComponent.git#v1.0.0"
+    "com.gameframex.unity.movecomponent": "https://github.com/juker74/MoveComponent.git#v1.0.1"
   },
   "scopedRegistries": [
     {

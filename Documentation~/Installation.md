@@ -2,12 +2,12 @@
 
 ## 通过 Git 安装
 
-仓库根目录直接放置 package.json、Runtime、Editor 等目录，保持本仓库布局。不要把它再放到另一个 Unity 工程的 Assets 下后推送，否则将不再是根路径 UPM 包。
+此私有仓库根目录直接放置 package.json、Runtime、Editor、Plugins 等目录，保持本仓库布局。不要把它再放到另一个 Unity 工程的 Assets 下后推送，否则将不再是根路径 UPM 包。
 
-1. 目标项目先安装 NodeCanvas，确保存在 `ParadoxNotion` 程序集和编辑器资源。测试使用的 CanvasCore 源码报告 FRAMEWORK_VERSION = 3.30。
-2. 在目标项目 Packages/manifest.json 中合并 GameFrameX scoped registry，配置见 README 和 `project-manifest.registry.example.json`。
-3. 使用 `https://github.com/juker74/MoveComponent.git#v1.0.0` 安装已发布版本。
-4. 通过 Package Manager 的 Add package from git URL 安装；依赖版本由包的 package.json 声明。
+1. 确认当前 Git 账号有 `juker74/MoveComponent` 私有仓库的访问权限，并已配置 Git 凭据管理器或系统钥匙串，使 Unity 调用 Git 时能使用现有凭据。不要把 token 写入 Git URL、manifest 或仓库文件。
+2. 本包在 `Plugins/ParadoxNotion` 内置完整 NodeCanvas / CanvasCore 源码与资源；CanvasCore 的 `FRAMEWORK_VERSION = 3.30`。若宿主项目已有 `Assets/Plugins/ParadoxNotion` 或其他副本，先将重复插件移出 `Assets`、备份到工程外，避免重复 GUID、程序集和类型。无需另行安装插件。
+3. 在目标项目 Packages/manifest.json 中合并 GameFrameX scoped registry，配置见 README 和 `project-manifest.registry.example.json`。
+4. 通过 Package Manager 的 Add package from git URL 使用 `https://github.com/juker74/MoveComponent.git#v1.0.1` 安装；GameFrameX 与 Unity 依赖版本由包的 package.json 声明。
 
 package.json 的 dependencies 使用 UPM 版本号。Git 地址写在宿主项目 manifest 的 dependencies 中。仓库同时提供 `project-manifest.git.example.json`，列出所有 GameFrameX 直接/传递依赖的 Git 地址和已核对版本标签；使用时同样合并已有 manifest，不能覆盖项目其他依赖。
 
@@ -23,17 +23,17 @@ Package Manager → Add package from disk → 选择 MoveComponent/package.json�
 }
 ```
 
-本地安装同样需要先配置 registry 和安装 NodeCanvas。
+本地安装同样需要配置 registry，并迁移宿主项目中重复的 NodeCanvas / CanvasCore 副本；插件已内置于包中。示例中的本地路径应替换为本机仓库路径。
 
 ## 维护与版本发布
 
-公开仓库地址为 `https://github.com/juker74/MoveComponent`，默认分支为 `main`。本仓库保留模块自身历史，不包含原项目的完整 Git 历史。
+私有仓库地址为 `https://github.com/juker74/MoveComponent`，默认分支为 `main`，访问者需拥有仓库权限和已配置的 Git 凭据。本仓库保留模块自身历史，不包含原项目的完整 Git 历史。
 
-发布新版本时先修改 package.json 的 version 并更新 CHANGELOG，然后提交变更、创建对应版本标签并推送。建议目标项目使用版本标签固定依赖。
+发布新版本时先修改 package.json 的 version 并更新 CHANGELOG，完成实际验证后记录结果，再提交变更、创建对应版本标签并推送到私有仓库。建议目标项目使用版本标签固定依赖。来源署名和各组件许可范围见 `Third Party Notices.md`，不得用包根的 Apache-2.0 文本替代内置插件的原有许可。
 
 ## 旧项目迁移
 
-包保留原有 .cs/.asmdef GUID、类型命名空间与程序集名称，避免不必要的序列化变化。若目标项目已有原来复制的源码，应先迁移重复的旧源码，再启用本包，避免重复 GUID、程序集或类型定义。保留自己的图资产、JSON、场景、视频与 UI 预制体。
+包保留原有 .cs/.asmdef GUID、类型命名空间与程序集名称，避免不必要的序列化变化。若目标项目已有原来复制的源码，应先迁移重复的旧源码，再启用本包，避免重复 GUID、程序集或类型定义。保留自己的图资产、JSON、场景、视频与 UI 预制体。内置插件也保留原 `.meta` GUID；尤其不要同时保留 `Assets` 中的旧 ParadoxNotion 与包内副本。
 
 | 原源码范围 | 包内目录 |
 | --- | --- |
@@ -42,6 +42,7 @@ Package Manager → Add package from disk → 选择 MoveComponent/package.json�
 | Assets/Scripts/Game/Logic/VideoFlow | Runtime/VideoFlow、Tests/Editor/VideoFlow、Tests/Editor/UnityIntegration |
 | Assets/Scripts/Framework/UI | Runtime/Integrations/GameFrameX/UI |
 | Assets/Scripts/Framework/Fsm | Runtime/Integrations/GameFrameX/Fsm |
+| Assets/Plugins/ParadoxNotion | Plugins/ParadoxNotion |
 
 引用 UI 的 JSON 仍使用 `命名空间.类名, 程序集简单名称`，不需要因包目录迁移重写 UI 身份。自己的 UI 类型所在 asmdef 应引用 `Game.Framework.MovieUI`，使用驱动时引用 `Game.VideoFlow.Contracts` / `Game.VideoFlow.Runtime`。
 

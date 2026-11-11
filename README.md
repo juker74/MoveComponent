@@ -1,16 +1,18 @@
 # MoveComponent
 
-可通过 Git URL 安装的 Unity UPM 源码仓库，包含完整的多端口节点编辑器、视频/UI 节点扩展、JSON 导入导出和影视流程驱动。仓库根目录的 `package.json` 就是包入口，不需要 `?path=`，也不需要导出 `.unitypackage`。
+可通过 Git URL 安装的私有 Unity UPM 源码仓库，包含完整的多端口节点编辑器、视频/UI 节点扩展、JSON 导入导出和影视流程驱动，并在 `Plugins/ParadoxNotion` 内置完整的 NodeCanvas / CanvasCore 源码与编辑器资源。仓库根目录的 `package.json` 就是包入口，不需要 `?path=`，也不需要导出 `.unitypackage`。
 
 - 包名：`com.gameframex.unity.movecomponent`
-- 版本：`1.0.0`
-- Unity：`2022.3` 起，验证版本 `2022.3.62f3`
+- 版本：`1.0.1`
+- Unity：`2022.3` 起，验证版本 `2022.3.62f3`；内置插件布局已通过 87 项测试，详见 [验证记录](Documentation~/Validation.md)。
+- 内置 CanvasCore：`FRAMEWORK_VERSION = 3.30`，保留 `ParadoxNotion` 与 `NodeCanvas` 程序集。
 - 保留现有命名空间、程序集名称与脚本 GUID，便于迁移原项目。
 
 ## 安装
 
-1. 在目标项目安装 **NodeCanvas / ParadoxNotion CanvasCore**，需要名为 `ParadoxNotion` 的程序集。当前验证使用 CanvasCore `3.30`；该插件未包含在本仓库中。
-2. 将下面的 registry 合并到目标项目 `Packages/manifest.json` 的 `scopedRegistries` 数组，保留项目已有配置：
+1. 确认当前 Git 账号有此私有仓库的访问权限，并已配置可供 Unity 使用的 Git 凭据。URL 中不要写入 token；使用现有 Git 凭据管理器或系统钥匙串。
+2. 若目标项目已有 `Assets/Plugins/ParadoxNotion` 或其他 NodeCanvas / CanvasCore 副本，先将重复插件移出 `Assets` 并备份到工程外，再安装本包，避免重复 GUID、程序集和类型。插件已完整内置，无需另行安装。
+3. 将下面的 registry 合并到目标项目 `Packages/manifest.json` 的 `scopedRegistries` 数组，保留项目已有配置：
 
 ```json
 {
@@ -20,10 +22,10 @@
 }
 ```
 
-3. 在 Unity **Window → Package Manager → + → Add package from git URL** 输入以下地址，安装 `v1.0.0`：
+4. 在 Unity **Window → Package Manager → + → Add package from git URL** 输入以下地址，安装 `v1.0.1`：
 
 ```text
-https://github.com/juker74/MoveComponent.git#v1.0.0
+https://github.com/juker74/MoveComponent.git#v1.0.1
 ```
 
 `package.json` 中声明的 GameFrameX 与 Unity 依赖会由 UPM 解析。包内的 registry 配置示例供宿主项目合并，UPM 不会从依赖包自动设置项目的 scoped registries。
@@ -38,7 +40,7 @@ https://github.com/juker74/MoveComponent.git#v1.0.0
 4. 在场景添加 `Game.VideoFlow.VideoFlowHost` 和 `FlowUiService`，配置导出的 JSON、入口节点 ID、视频纹理与 Clips 映射，并勾选 Play On Start。
 5. 具体影视 UI 继承 `Game.Framework.UI.MovieUIForm`。项目 UI 接入层订阅 `FlowUiService.Opened`，按请求类型创建界面后调用 `Bind(request, form)`，订阅 `Closed` 清理界面。具体控件与业务预制体由目标项目提供。
 
-驱动通过有向图和主流程状态机运行；UI/逻辑节点可以附属于来源视频。数据节点是每次运行共享的值容器：视频循环保留当前值，重新 Start 恢复初始值。所有运行代码不依赖 UnityEditor 或 NodeCanvas 编辑器。
+驱动通过有向图和主流程状态机运行；UI/逻辑节点可以附属于来源视频。数据节点是每次运行共享的值容器：视频循环保留当前值，重新 Start 恢复初始值。MoveComponent 的 Runtime 代码不依赖 UnityEditor 或 NodeCanvas 编辑器。
 
 ## 目录
 
@@ -50,6 +52,7 @@ https://github.com/juker74/MoveComponent.git#v1.0.0
 | `Runtime/Integrations/GameFrameX` | MovieUIForm 基类与 GameFrameX FSM 更新适配 |
 | `Editor/NodeComposer` | 节点画布、多端口连线、属性配置、JSON 文件操作 |
 | `Editor/VideoNodes` | 视频预览、资源拖拽、帧编辑、影视 UI 类选择与分支编辑 |
+| `Plugins/ParadoxNotion` | 完整 NodeCanvas / CanvasCore、编辑器资源及原始 FullSerializer MIT 许可文本 |
 | `Tests/Editor` | 协议、驱动、Unity 接入及编辑器测试和测试视频 |
 | `Samples~` | 可通过 Package Manager 导入的示例 |
 | `Documentation~` | 安装、依赖 Git 地址、模块说明与验证记录 |
@@ -74,14 +77,14 @@ python3 Tools~/validate_package.py
 
 ## 引用、来源与作者
 
-本模块整理自基于 [GameFrameX.Unity](https://github.com/GameFrameX/GameFrameX.Unity) 的本地工程，提供节点编辑、视频扩展与流程驱动能力。保留原有命名空间、程序集身份和脚本 GUID。框架来源、外部依赖与设计参考分别列出如下：
+本模块整理自基于 [GameFrameX.Unity](https://github.com/GameFrameX/GameFrameX.Unity) 的本地工程，提供节点编辑、视频扩展与流程驱动能力。保留原有命名空间、程序集身份和脚本 GUID。框架来源、内置插件、外部依赖与设计参考分别列出如下：
 
 | 类型 | 项目或文章 | 作者 / 维护者 | 用途 |
 | --- | --- | --- | --- |
 | 框架来源 | [GameFrameX.Unity](https://github.com/GameFrameX/GameFrameX.Unity) / [GameFrameX](https://github.com/GameFrameX) | Blank（包元数据署名）、GameFrameX 贡献者 | 模块结构、FSM、UI 及相关基础设施 |
-| 外部编辑器依赖 | [NodeCanvas / CanvasCore](https://nodecanvas.paradoxnotion.com/) | ParadoxNotion | 节点画布与编辑器基础；需单独安装，源码未包含在本仓库 |
+| 内置插件 | [NodeCanvas / CanvasCore](https://nodecanvas.paradoxnotion.com/) | Gavalakis Evangelos / ParadoxNotion | 完整源码与资源位于 `Plugins/ParadoxNotion`，作为节点画布与编辑器基础 |
 | 设计参考 | [MissionSystem](https://github.com/529324416/MissionSystem) | PrinceBiscuit（GitHub：[529324416](https://github.com/529324416)） | 节点编辑与图结构设计的参考项目 |
 | 设计参考 | [用户提供的知乎文章](https://zhuanlan.zhihu.com/p/718702259) | 作者以原文署名为准（本次未能核实） | 早期设计讨论参考 |
 | Git 忽略模板 | [github/gitignore — Unity.gitignore](https://github.com/github/gitignore/blob/main/Unity.gitignore) | GitHub gitignore 社区贡献者 | 标准 Unity 忽略规则，附加本仓库工具和产物规则 |
 
-本仓库由 [juker74](https://github.com/juker74) 维护。依赖模块的具体 Git 地址与验证版本见 [Dependencies.md](Documentation~/Dependencies.md)，其他第三方说明见 [Third Party Notices.md](Third%20Party%20Notices.md)。来源框架的 Apache-2.0 许可保留在 [LICENSE.md](LICENSE.md)；外部插件和依赖各自遵循原作者许可。
+此私有仓库由 [juker74](https://github.com/juker74) 维护。依赖模块的具体 Git 地址与版本见 [Dependencies.md](Documentation~/Dependencies.md)，来源与许可范围见 [Third Party Notices.md](Third%20Party%20Notices.md)。[LICENSE.md](LICENSE.md) 保留 GameFrameX 来源代码的 Apache-2.0 文本，不将内置 NodeCanvas / CanvasCore 声明为 Apache-2.0；插件保留原作者署名与适用许可，FullSerializer 的原始 MIT 许可文本随源码保留。

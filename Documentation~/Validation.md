@@ -1,14 +1,34 @@
 # 包导出验证
 
+## 1.0.1 — 内置 ParadoxNotion
+
 验证日期：2026-11-11。Unity 版本：2022.3.62f3。
 
-## 独立项目导入
+独立验证工程通过 UPM `file:` 安装仓库根目录，移除了 `Assets` 中原有的 ParadoxNotion 副本。包内全部 **15 个程序集**（包括 `ParadoxNotion` 与 `NodeCanvas`）成功编译，源码均来自 MoveComponent 包。
+
+- 5 个 EditMode 测试程序集共 **87 项：87 通过、0 失败、0 跳过**；启用图形环境以验证视频解码与预览。
+- `StyleSheet/StyleSheetDark`、`StyleSheet/StyleSheetLight`、`TypeIcons/Implicit/System.Object`、`Manual`、`Resources`、`Support`、`Community` 均由 `Resources.Load` 成功加载。
+- ComposerGraph 脚本 GUID 正常解析到 `Packages/com.gameframex.unity.movecomponent/Editor/NodeComposer/ComposerGraph.cs`。
+- 结构检查通过：**501 个 C# 文件、15 个程序集、758 个唯一 GUID**。全部 1,244 个插件文件与原安装副本逐文件字节一致，根目录 `.meta` 也完整保留。
+- `python3 Tools~/test_validate_package.py` 验证真实 NodeCanvas GUID 程序集引用可解析，并确认不存在的 GUID 目标被拒绝；不再将 ParadoxNotion 当作无需提供的外部程序集。
+
+依赖版本沿用记录中的组合；独立验证使用本机已有的 GameFrameX / Unity 包缓存。此结果验证本地 file 包的完整内置插件布局；私有远端 Git 发布与目标工程导入在发布流程中另外核对。
+
+机器可读结果见 `validation-summary.json`。以下 1.0.0 记录保留其原安装布局与历史结论。
+
+## 1.0.0 — 历史记录（NodeCanvas 单独安装）
+
+以下记录适用于未内置 ParadoxNotion 的 1.0.0 包；当时隔离项目使用另外安装的 NodeCanvas，不是 1.0.1 内置插件布局的验证结果。
+
+验证日期：2026-11-11。Unity 版本：2022.3.62f3。
+
+### 独立项目导入
 
 使用全新测试项目，不复制原项目业务源码、场景或设置。先通过 UPM 的 file 引用加载仓库根目录，再通过本地 Git 仓库 URL（git+file 协议及版本标签）安装到 Library/PackageCache；外部依赖使用已安装版本的本地包缓存，NodeCanvas 单独安装。所有 13 个包内程序集成功编译。此验证检查跨项目结构与依赖闭包，不把本地依赖缓存测试声称为远程 registry 下载可用性测试。
 
 导入中发现外部 NodeCanvas / GameFrameX 使用 AI、Physics、Physics2D 和 TextMeshPro 等模块；包 manifest 已显式补齐，并将 GameFrameX 传递依赖版本固定到验证组合。
 
-## 完整包内测试
+### 完整包内测试
 
 运行导出包的 5 个 EditMode 测试程序集（启用图形环境），Git 安装后共 **87 项：87 通过、0 失败、0 跳过**。
 
@@ -24,7 +44,7 @@
 
 导出时将测试视频定位改为稳定的 Packages/com.gameframex.unity.movecomponent/... 包内路径，并为两个既有 Undo 用例补充明确的测试分组边界；增加包内视频物理路径断言，并修复视频异步准备在 Layout/Repaint 之间改变控件树造成的偶发 IMGUI 异常（准备期间保留并禁用控件）；未修改当前原项目源码。
 
-## 仓库检查
+### 仓库检查
 
 `python3 Tools~/validate_package.py` 检查包信息、样例、13个程序集的引用闭包、86个唯一 GUID、资源存在性、缺失/孤立 .meta、Editor 隔离与机器绝对路径。校验脚本仅使用 Python 3.9+ 标准库。
 

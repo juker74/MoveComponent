@@ -1,6 +1,6 @@
 # 通用节点拼接工具
 
-仅编辑图配置，不包含任务系统或节点执行器。复用项目中的 ParadoxNotion / NodeCanvas，未修改插件源码。
+Node Composer 仅编辑图配置，不包含自己的任务系统或节点执行器。复用本包 `Plugins/ParadoxNotion` 中完整内置的 NodeCanvas / CanvasCore，保留插件源码与资源；宿主项目不需要再安装一份插件。
 
 ## 使用
 

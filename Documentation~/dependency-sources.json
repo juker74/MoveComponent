@@ -1,6 +1,5 @@
 {
   "package": "com.gameframex.unity.movecomponent",
-  "testedUnity": "2022.3.62f3",
   "registry": {
     "name": "GameFrameX",
     "url": "https://gameframex.upm.alianblank.uk",
@@ -280,14 +279,31 @@
       "direct": true
     }
   },
-  "external": [
+  "external": [],
+  "packageVersion": "1.0.1",
+  "targetUnity": "2022.3.62f3",
+  "validationStatus": "1.0.1 bundled-plugin local file UPM validation passed in Unity 2022.3.62f3: all 15 assemblies from package; editor resources loaded; 87/87 EditMode tests. See Validation.md.",
+  "repository": {
+    "url": "https://github.com/juker74/MoveComponent.git",
+    "visibility": "private",
+    "tag": "v1.0.1",
+    "authentication": "Use existing Git credentials for an authorized account; never embed a token in the URL."
+  },
+  "bundled": [
     {
       "name": "NodeCanvas / ParadoxNotion CanvasCore",
-      "testedFrameworkVersion": "3.30",
-      "requiredAssembly": "ParadoxNotion",
+      "path": "Plugins/ParadoxNotion",
+      "frameworkVersion": "3.30",
+      "versionSource": "CanvasCore/Framework/Runtime/Graphs/Internal/GraphSource.cs:FRAMEWORK_VERSION",
+      "requiredAssemblies": [
+        "ParadoxNotion",
+        "NodeCanvas"
+      ],
+      "author": "Gavalakis Evangelos",
+      "publisher": "ParadoxNotion",
       "git": null,
       "source": "https://nodecanvas.paradoxnotion.com/",
-      "note": "The installed source has no public Git/UPM package identity; install NodeCanvas separately. Third-party source is not redistributed."
+      "note": "Complete source and resources bundled in this private repository, preserving assembly identities and .meta GUIDs. No separate NodeCanvas installation is required. See Third Party Notices.md for license scope and the retained original FullSerializer MIT notice."
     }
   ]
 }

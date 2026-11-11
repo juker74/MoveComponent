@@ -17,23 +17,31 @@ check(manifest["name"] == "com.gameframex.unity.movecomponent", "Unexpected pack
 check(re.fullmatch(r"\d+\.\d+\.\d+", manifest["version"]), "Invalid package version")
 for name, version in manifest["dependencies"].items():
     check(re.fullmatch(r"\d+\.\d+\.\d+", version), f"Dependency must use a version: {name}")
-for folder in ("Runtime", "Editor", "Tests", "Samples~", "Documentation~"):
+for folder in ("Runtime", "Editor", "Tests", "Samples~", "Documentation~",
+               "Plugins/ParadoxNotion/CanvasCore", "Plugins/ParadoxNotion/NodeCanvas"):
     check((root / folder).is_dir(), f"Missing directory: {folder}")
 for sample in manifest["samples"]:
     check((root / sample["path"]).is_dir(), "Missing registered sample")
 
 assemblies = {}
+assembly_guids = {}
 for path in root.rglob("*.asmdef"):
     data = json.loads(path.read_text(encoding="utf-8-sig"))
     check(data["name"] not in assemblies, f"Duplicate assembly: {data['name']}")
     assemblies[data["name"]] = data
+    metadata = Path(str(path) + ".meta")
+    if metadata.exists():
+        guid = re.search(r"^guid: ([0-9a-f]{32})$", metadata.read_text(), re.M)
+        if guid:
+            assembly_guids[guid.group(1)] = data["name"]
     if "Editor" in path.relative_to(root).parts:
         check(data.get("includePlatforms") == ["Editor"], f"Editor assembly not isolated: {path}")
-external = {"ParadoxNotion", "SimpleJSON.Runtime", "GameFrameX.UI.Runtime",
+external = {"SimpleJSON.Runtime", "GameFrameX.UI.Runtime",
             "GameFrameX.UI.UGUI.Runtime", "GameFrameX.FSM.Runtime"}
 for name, data in assemblies.items():
     for reference in data.get("references", []):
-        check(reference in assemblies or reference in external, f"Undeclared assembly: {name} -> {reference}")
+        target = assembly_guids.get(reference[5:]) if reference.startswith("GUID:") else reference
+        check(target in assemblies or target in external, f"Undeclared assembly: {name} -> {reference}")
 
 seen_guids = {}
 for path in root.rglob("*"):

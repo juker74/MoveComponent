@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1 — 2026-11-11
+
+- Bundle the complete existing ParadoxNotion NodeCanvas / CanvasCore source tree and editor resources under Plugins/ParadoxNotion, preserving original assemblies and .meta GUIDs.
+- Use a private Git repository with v1.0.1 installation examples and existing Git credentials; migrate duplicate host-project plugin copies out of Assets.
+- Retain Gavalakis Evangelos / ParadoxNotion credits and the original FullSerializer MIT notice; clarify that the root Apache-2.0 text does not relicense NodeCanvas / CanvasCore.
+- Verify all 15 bundled assemblies, editor Resources and 87 EditMode tests in an isolated UPM file installation without a local plugin copy.
+- Resolve GUID assembly references in package validation and reject missing targets with a runnable regression check.
+
 ## 1.0.0 — 2026-11-11
 
 - Export the complete typed node editor, strict JSON interchange and node view extensions.
@@ -9,4 +17,4 @@
 - Include GameFrameX MovieUIForm and optional FSM update integration.
 - Convert test resource references to package paths and define explicit Undo test group boundaries.
 - Keep video preview controls stable while the native decoder prepares between IMGUI events.
-- Verify local Git UPM installation and all 87 package tests in an isolated Unity project.
+- Verify local Git UPM installation and all 87 package tests in an isolated Unity project, with NodeCanvas installed separately (historical 1.0.0 validation).
