@@ -2,7 +2,7 @@
   "date": "2026-11-11",
   "unity": "2022.3.62f3",
   "mode": "EditMode, isolated project, graphics enabled",
-  "packageSource": "Local file UPM package; complete bundled ParadoxNotion; isolated project has no local plugin copy",
+  "packageSource": "Private remote Git UPM v1.0.1 resolved in GameFrameX.Unity; isolated local file UPM also verified",
   "dependencies": "Pinned versions from dependency-sources.json; isolated project uses existing GameFrameX/Unity package caches. NodeCanvas and CanvasCore come from this package.",
   "result": "Passed",
   "total": 87,
@@ -64,5 +64,7 @@
     "Support",
     "Community"
   ],
-  "validatorRegression": "Passed: bundled GUID target resolves; unknown GUID target rejected"
+  "validatorRegression": "Passed: bundled GUID target resolves; unknown GUID target rejected",
+  "gitCommit": "155c1783a226d76f2b5748dac9b0b3f8998bde8a",
+  "existingGraph": "Existing ComposerGraph asset resolves to the package script with retained GUID 22a41af39b6684b1087cc91c914c50b7"
 }

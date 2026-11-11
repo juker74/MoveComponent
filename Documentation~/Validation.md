@@ -12,7 +12,7 @@
 - 结构检查通过：**501 个 C# 文件、15 个程序集、758 个唯一 GUID**。全部 1,244 个插件文件与原安装副本逐文件字节一致，根目录 `.meta` 也完整保留。
 - `python3 Tools~/test_validate_package.py` 验证真实 NodeCanvas GUID 程序集引用可解析，并确认不存在的 GUID 目标被拒绝；不再将 ParadoxNotion 当作无需提供的外部程序集。
 
-依赖版本沿用记录中的组合；独立验证使用本机已有的 GameFrameX / Unity 包缓存。此结果验证本地 file 包的完整内置插件布局；私有远端 Git 发布与目标工程导入在发布流程中另外核对。
+依赖版本沿用记录中的组合；独立验证使用本机已有的 GameFrameX / Unity 包缓存。此外，目标 GameFrameX.Unity 工程已通过私有远端 Git 安装 `v1.0.1`（提交 `155c1783a226d76f2b5748dac9b0b3f8998bde8a`），移除了本地插件副本。UPM 成功解析该提交，15 个程序集均来自 Git 包，以上 7 个 Resources 均加载成功；现有 ComposerGraph 资产正常关联包内脚本，87 项 EditMode 测试再次全部通过，无失败或跳过。
 
 机器可读结果见 `validation-summary.json`。以下 1.0.0 记录保留其原安装布局与历史结论。
 
