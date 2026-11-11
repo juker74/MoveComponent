@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 — 2026-11-11
+
+- Add the GameFrameX MovieComponent → IMovieManager → MovieManager entry with explicit catalog loading, multiple cached chapter graphs and one executing chapter.
+- Forward module operations, immutable snapshots and chapter-aware events through the scene component; bind catalog/graph TextAssets, UI services, video output and clips explicitly.
+- Define Stop and unload scopes, fresh values on chapter replay, retained values in graph loops, and stale callback rejection across chapter switches.
+- Keep VideoFlowDriver as a thin compatibility adapter with existing Host/FSM entry points; the GF module is updated and shut down only by the framework.
+- Document v1.2.0 installation and resource boundaries. Local Unity validation passes all 163 tests across five assemblies; package checks include assembly references. Remote Git and target-project evidence is recorded in Documentation~/Validation.md after verification.
+
 ## 1.1.0 — 2026-11-11
 
 - Add a chapter catalog asset and Inspector with stable IDs, ordered chapters, graph references, explicit entry selection and Undo/Redo.

@@ -1,94 +1,127 @@
 # 影视流程业务驱动
 
-读取 NodeComposer 导出的 JSON；创建只读有向图；通过主流程状态机控制视频准备、运行和切换，UI 作为来源视频的附属交互执行。支持多帧端口、一个帧端口打开多个 UI、汇合与有向环。运行时不引用 UnityEditor 或 NodeCanvas。
+现代入口为 `MovieComponent → IMovieManager → MovieManager`。组件配置 Unity 服务并转发 API，模块维护目录、多个只读章节图缓存和单个执行章节；GameFrameX BaseComponent 统一调用模块 Update/Shutdown。执行仍复用同一套有向图、节点生命周期与主流程状态机，运行时不引用 UnityEditor 或 NodeCanvas。
 
-## 场景使用
+## 场景绑定与业务调用
 
-1. 创建一个 GameObject，添加 `VideoFlowHost`、`FlowUiService`。
-2. 在 Host 的 Graph Json 指定工具导出的 JSON TextAsset，Entry Node Id 填写入口节点 ID（例如示例的 `video-a`）。入口必须显式指定，不从入度推断。
-3. 把 FlowUiService 组件拖入 Host 的 Ui Service；视频输出指定 RenderTexture，场景 RawImage 等显示该纹理。不指定纹理时是 APIOnly 输出。
-4. 在 Clips 中将导出的 source 路径或 assetGuid 绑定到 Project 中的 VideoClip。构建时通过序列化引用保留资源；不能直接把 `Assets/...` 字符串当作播放器 URL。网络 URL、绝对磁盘路径可以直接播放；资源系统可注入解析器。
-5. 勾选 Play On Start，或调用 `host.Play()`。禁用 Host 会停止流程，重新启用后需要再次 Play。
-6. UI 系统订阅 `FlowUiService.Opened`，按 request.UiType 和 request.Parameters 创建实际 UI；以 request.ActivationId 保存 UI 实例。取得实际 UI 后调用 `Bind(request, form)`；正常交互结束由基类提交分支，或调用 `Complete(activationId, branchId)`，被动关闭调用 `Cancel(activationId)`，打开失败调用 `Fail(activationId, error)`。订阅 Closed 关闭该实例。此桥不生成具体的选项或按钮界面。
+1. 在已配置 GameFrameX BaseComponent 的场景添加 `GameFrameX.Movie.Runtime.MovieComponent` 和 `Game.VideoFlow.FlowUiService`，由一个 MovieComponent 配置已注册的 Movie 模块。
+2. **Catalog Json** 绑定导出的目录 JSON TextAsset。**Chapter Graphs** 每项的 **Chapter Id** 填写目录中的 `chapterId`，并将对应章图 TextAsset 拖入 **Graph Json**。可以预载任意子集；使用 `Play()` 或 **Play On Start** 时必须包含默认起始章节。
+3. **Ui Service** 绑定实现 `IFlowUiService` 的组件，例如 FlowUiService。**Video Target** 指定 RenderTexture，场景 RawImage 等显示该纹理；不指定纹理时使用 APIOnly 输出。
+4. **Clips** 将导出的 `source` 或 `assetGuid` 填入 **Source Or Guid**，绑定 Project 中的 VideoClip。序列化引用可保留构建资源；`Assets/...` 字符串不是播放器 URL。网络 URL、绝对磁盘路径可交给播放器；其他资源系统通过服务解析边界接入。
+5. 勾选 **Play On Start**，或由业务在框架和组件就绪后调用 `movie.Play()`。该方法先校验场景绑定，再替换目录和图缓存、加载已绑定的图并播放默认起始章节；它不是继续上次播放。
+
+MovieComponent 标记为 `GameFrameXManualStartup`，需要显式加入场景并配置，框架自动扫描不会创建未配置的实例。同一框架注册由一个组件拥有；重复组件会被禁用，不能重新配置或清理首个组件的模块资源。框架 BaseComponent 是模块的唯一更新和关闭来源。
+
+```csharp
+using GameFrameX.Movie.Runtime;
+using UnityEngine;
+
+public sealed class MovieEntry : MonoBehaviour
+{
+    [SerializeField] MovieComponent movie;
+
+    public void PlayConfigured()
+    {
+        var result = movie.Play();
+        if (!result.Success) Debug.LogError(result.Message);
+    }
+
+    // 章图 JSON 由项目资源系统取得，chapterId 来自目录。
+    public void LoadAndPlay(string chapterId, string graphJson)
+    {
+        var loaded = movie.LoadChapter(chapterId, graphJson);
+        if (!loaded.Success) { Debug.LogError(loaded.Message); return; }
+        var started = movie.PlayChapter(chapterId);
+        if (!started.Success) Debug.LogError(started.Message);
+    }
+}
+```
+
+上例的按需加载要求目录已由 `Play()` 或 `LoadCatalog(catalogJson)` 安装。已经缓存的图直接调用 `PlayChapter(chapterId)`；不必重复 LoadChapter。禁用组件只停止执行，重新启用后显式播放；销毁组件退订事件并卸载其模块资源。组件不暴露 Driver/Manager getter，也不自行 Update 或关闭全局框架。
+
+项目 UI 接入层订阅 `FlowUiService.Opened`，按 `request.UiType` 和 `request.Parameters` 创建实际 UI，并用原始 request 调用 `Bind(request, form)`；返回 false 时关闭这次迟到的界面。订阅 `Closed` 清理对应实例。此桥不生成具体控件或预制体：
 
 ```csharp
 uiService.Opened += request =>
 {
-    // 用业务 UI 系统按 request.UiType 打开界面并传入 request.Parameters。
-    // 打开完成取得 MovieUIForm 后，调用 uiService.Bind(request, form)。
-    // 如果返回 false，说明请求已失效，接入层应关闭该次打开的 UI。
+    // 按 request.UiType 打开 UI，完成后调用 uiService.Bind(request, form)。
+    // Bind 返回 false 时，关闭这次打开的 UI。
 };
-uiService.Closed += activationId => { /* 销毁对应 UI 实例。 */ };
-host.EventRaised += evt => UnityEngine.Debug.Log($"{evt.Kind}: {evt.NodeId} #{evt.ActivationId}");
-host.Play();
+uiService.Closed += activationId => { /* 关闭对应 UI 实例。 */ };
+movie.EventRaised += evt =>
+    Debug.Log($"{evt.ChapterId}/{evt.NodeId}: {evt.Kind} #{evt.ActivationId}");
 ```
 
-## 纯业务入口
+## 目录、图缓存与执行
 
-```csharp
-var driver = new VideoFlowDriver(
-    new VideoFlowLoader(),
-    new VideoFlowBehaviorFactory(videoPlaybackService, flowUiService));
-var loaded = driver.Load(jsonText);
-if (!loaded.Success) throw new System.InvalidOperationException(loaded.Message);
-var started = driver.Start("video-a");
-if (!started.Success) throw new System.InvalidOperationException(started.Message);
-// 宿主每帧唯一调用一次：
-driver.Tick(deltaTime, unscaledDeltaTime);
-// 离开业务：
-driver.Dispose();
-```
+`LoadCatalog` 只安装目录元数据；`LoadChapter` 只校验并缓存显式提供的图 JSON；`PlayChapter` 才执行已缓存章节。`MovieChapterInfo.GraphKey` 是宿主资源键，模块不会自动读取文件、解析 Assets 路径、加载缺失章图或播放首章/下一章。章节 ID 精确匹配，不从图 ID、顺序或文件名推断。
 
-注入的服务必须每次 Open 创建独立会话。接口允许换成资源系统、其他播放器和其他 UI 服务实现；请求中的 source 和 assetGuid 都传到播放器资源解析边界。
+| 操作 | 范围与保留内容 |
+| --- | --- |
+| `LoadCatalog(json)` | 完整校验成功后停止当前执行，清除旧图缓存和执行数据，安装有序目录与 StartChapterId；无效输入保留原状态。 |
+| `LoadChapter(id, json)` | 目录项必须存在；校验图、可执行入口与图 ID 唯一性后加入/替换缓存。可在播放时缓存其他章节，不改变当前执行。当前已选择章节须先 UnloadChapter 才能替换。失败保留原缓存。 |
+| `PlayChapter(id)` | 目标必须已缓存；先校验目标，再关闭旧执行并从目录入口开始。无效目标保留原执行；同章重播也新建会话并恢复默认值。 |
+| `Stop()` | 关闭视频、UI、逻辑和排队跳转，保留目录、全部图缓存、选中章节及运行值供查询。 |
+| `UnloadChapter(id)` | 仅移除该图缓存，保留目录项；若为选中章节，同时清理执行、值和请求，清空 CurrentChapterId，回到 Empty/Idle。其他章节缓存保留；未知或已卸载 ID 无操作。 |
+| `UnloadAllChapters()` | 停止并释放全部缓存与执行数据，回到 Empty/Idle；保留目录和 StartChapterId。 |
+| `UnloadCatalog()` | 在卸载全部章节的基础上清除目录和 StartChapterId。 |
 
-框架 FSM 接入使用 `Runtime/Integrations/GameFrameX/Fsm/VideoFlowRunningState.cs`。先 Load/Start，再由 FsmManager 创建 `IFsm<IVideoFlowDriver>` 并启动此状态，它在 OnUpdate 调用 Tick、OnLeave 调用 Stop。使用此方式时不使用 VideoFlowHost 的自动 Tick，避免双重更新。
+所有公开调用、服务回调及状态更新都在 Unity 主线程进行。`LoadCatalog`、`LoadChapter`、`PlayChapter` 返回 `GraphResult<bool>`，检查 Success/Issues；清理 API 可重复调用。普通卸载保留依赖服务与事件订阅，GF Shutdown 才关闭模块。生命周期回调内的 Stop/卸载会安全延后到当前操作结束，并优先阻止受影响执行继续跳转；重入的加载/播放返回状态错误。
 
-## 编辑图与业务状态的对应
+组件转发完整 `IMovieManager`：上述操作、`SetDependencies`、事件及只读快照。可查询 `Status`、`Phase`、`CurrentChapterId`、`CurrentNodeId`、`StartChapterId`、`Chapters`、`LoadedChapterIds`、`CurrentVideo`、`ActiveNodes` 和 `Values`。Chapters 与 LoadedChapterIds 按目录顺序排列；快照只供观察，不暴露可变图配置。
 
-编辑器中的独立节点，不代表运行时的同级互斥状态。JSON 仍是一视频一节点、一 UI 一节点，不增加状态层级字段，也不靠节点坐标或布局推断归属。主视频上下文由实际触发路径在运行时创建；同一 UI 图节点被多次触发时，每次创建独立交互实例和来源归属。
+需要定制加载器、播放器、UI 或节点行为时，在加载章图前通过 `SetDependencies(loader, behaviorFactory)` 注入；服务每次 Open 必须创建独立会话。也可在框架就绪后使用 `GameFrameX.Runtime.GameFrameworkEntry.GetModule<IMovieManager>()` 取得同一注册模块。由组件配置场景服务时，业务直接持有组件；`Play()` 始终使用场景绑定的服务。`IMovieManager` 不提供 Tick/Dispose，业务不手动更新或关闭 GF 模块。
 
-- 视频帧 → UI：在当前视频上下文中打开 UI，主流程保持 PlayingVideo。
-- UI 完成 → UI：替换该交互实例，保留来源视频上下文。
-- UI 完成 → 视频：由主流程进入 SwitchingVideo，清理旧上下文，再进入 PreparingVideo。
-- 视频完成 → 视频：同样经过 SwitchingVideo；同类型、同节点在环路中重新进入，也创建新的上下文。
+## 编辑图、阶段与事件
 
-`VideoFlowStates.cs` 实现具体状态对象及 Enter/Tick/Leave 分派；`VideoFlowDriver` 解析结果与图连线路由；内部 `VideoExecutionContext` 持有当前视频、帧触发进度、附属交互集合和暂停请求。UI 不成为主状态；播放器暂停时仍会更新 UI。
+独立图节点不代表同级互斥状态。JSON 仍是一视频一节点、一 UI 一节点；主视频上下文按实际触发路径创建。同一 UI 节点多次触发时，每次都有独立激活与来源归属。
 
-主流程阶段由 `driver.Phase` 暴露：Idle → PreparingVideo → PlayingVideo → SwitchingVideo → PreparingVideo；最终到 Completed / Stopped / Faulted。为兼容独立 UI 入口或视频结束后进入 UI，Interacting 阶段允许没有来源视频的独立交互。
+- 视频帧 → UI：在来源视频上下文中打开 UI，主流程保持 PlayingVideo。
+- UI 完成 → UI：替换该交互，保留来源视频；UI 完成 → 视频：清理旧上下文，经 SwitchingVideo 进入 PreparingVideo。
+- 视频完成 → 视频：同样先退出旧视频；图内环路重入同一视频也创建新会话，但保留本次章节的运行值。
 
-`driver.CurrentVideo` 是当前视频上下文的不可变快照，可查看 NodeId、ActivationId、UiActivationIds 和 PauseCount；`driver.ActiveNodes` 中的 SourceVideoActivationId 表示交互归属。`FlowEventKind.PhaseChanged` 发布主流程状态变化，UI 打开/关闭仅发布其节点生命周期事件，不会伪装成主状态切换。
+`MovieManager` 与 `VideoFlowStates.cs` 负责状态和路由；`VideoExecutionContext` 持有视频、帧进度、附属交互与暂停请求。`movie.Phase` 暴露 Idle、PreparingVideo、PlayingVideo、SwitchingVideo、Interacting、Completed、Stopped、Faulted。Interacting 支持无来源视频的独立 UI；暂停视频时 UI 仍更新。
 
-```csharp
-host.EventRaised += evt =>
-{
-    if (evt.Kind == FlowEventKind.PhaseChanged)
-        UnityEngine.Debug.Log($"主流程阶段：{evt.Phase}");
-};
-```
-
-业务状态机使用普通状态对象，位于 Game；`Framework/Fsm/VideoFlowRunningState` 仍是可选的 GameFrameX 更新入口，不把 UI 或每个视频图节点注册成框架互斥状态。
+`CurrentVideo` 可查看 NodeId、ActivationId、UiActivationIds 和 PauseCount；`ActiveNodes` 的 SourceVideoActivationId 表示交互归属。`FlowEventKind.PhaseChanged` 通知主阶段变化，UI 只发布对应节点事件。`FlowEvent.ChapterId` 标明事件所属章节，GraphId/NodeId 继续标明图与节点；旧单图兼容入口没有目录，ChapterId 为 null。
 
 ## 状态与切换时序
 
-流程状态：Empty → Ready → Running → Completed / Stopped / Faulted。激活状态：Entering → Active → Exiting → Exited。每次进入使用递增 ActivationId、新行为实例和新播放/UI 会话，环路重新进入同一节点同样如此。
+执行状态使用 Empty、Ready、Running、Completed、Stopped、Faulted；Status 描述执行，成功加载目录和章图后仍可能为 Empty，目录/缓存是否存在由 Chapters/LoadedChapterIds 查询。激活状态为 Entering → Active → Exiting → Exited。ActivationId 在模块生命周期内持续递增，Stop、卸载、换目录和同章重播均不重置，旧回调不会因 ID 重用命中新执行。
 
-视频 A → 视频 B：先关闭 A 关联 UI，退出并 Dispose A，随后创建 B 会话并进入 B。节点共用行为类型不意味着共用实例；不依赖框架 FSM 同类型状态重入。旧上下文进入 Exiting 后立即失效，旧播放器回调也不能操作新播放器。
+切换视频时先关闭关联 UI，退出并释放旧视频，再创建新会话。Enter 内完成、帧触发和 UI 回调只排队；每次框架 Update 消费开始时已有的请求，新请求留到下次更新，避免同步环路递归。UI 呈现可能晚一个业务更新，不提供硬件级逐帧定点暂停保证。
 
-Enter 内完成、帧触发、UI 回调的结果仅入队。每次 Tick 只消费开始时已存在的请求；处理产生的新请求留到下一 Tick，避免同步环路无限递归。UI 呈现可能比检测到帧晚一个业务 Tick，不提供视频硬件级逐帧定点暂停保证。
+- 跨过多个配置帧时按帧号顺序触发；每个帧端口每次视频激活只触发一次。
+- UI 的 pauseVideo 只暂停来源视频；最后一个暂停租约释放后恢复，正在关闭或已退出的视频不恢复。
+- UI 无后继时结束交互；后继 UI 保留来源上下文；后继视频清理来源视频及其所有 UI。取消只退出 UI，不走结果连线。
+- 来源视频停止、自然结束或替换会清理附属 UI，清理不产生 UI 结果分支；自然结束仍走视频 completed。播放错误走 failed，未配置则 FlowFaulted。
+- 行为生命周期异常触发清理与故障事件；观察者异常隔离。退出后的行为上下文、旧 UI 请求与捕获的旧回调均不能修改新执行。
 
-- 帧号由播放器已呈现帧检测；跨过多个配置帧时按帧号顺序逐一触发，每次视频激活每个配置帧触发一次，回拖不会重复触发。
-- UI pauseVideo 仅暂停其来源视频；多个 UI 分别持有暂停租约，最后一个释放后恢复。已经退出或正在关闭的视频不会恢复。
-- UI 所选分支无后继：结束 UI；下一 UI：保留来源视频；下一视频：关闭旧视频和它的所有 UI，再进入新视频。
-- 取消 UI：仅退出该 UI，不走分支连线。直接从帧打开 UI 时，来源视频被停止、自然结束或替换会清理它所有 UI，清理不触发 UI 选中分支连线。视频自然结束仍走自己的 completed。
-- 视频播放错误：有 failed 连线则走该连线，否则 FlowFaulted。行为 Enter/Update/Exit/Dispose 抛异常时清理所有激活并发布故障。
-- Start 可在 Ready、Completed、Stopped 启动；运行中拒绝 Load；加载失败保留原图。Faulted 需要重新 Load。Stop/Dispose 幂等。
-- 所有调用及 UI 状态更新在 Unity 主线程进行。生命周期观察者异常隔离，不改变执行结果；事件处理器应自行记录自己的异常。事件处理器中的 Stop 延迟到当前操作结束，优先于待处理跳转。
+## 旧单图兼容入口
+
+`VideoFlowDriver` 保留原 API，内部只是未注册 MovieManager 的薄适配层；`VideoFlowHost` 和 `VideoFlowRunningState` 继续服务旧单图场景，执行实现没有第二套状态机：
+
+```csharp
+var driver = new VideoFlowDriver(new VideoFlowLoader(),
+    new VideoFlowBehaviorFactory(videoPlaybackService, flowUiService));
+var loaded = driver.Load(jsonText);
+if (!loaded.Success) throw new System.InvalidOperationException(loaded.Message);
+var started = driver.Start(entryNodeId);
+if (!started.Success) throw new System.InvalidOperationException(started.Message);
+driver.Tick(deltaTime, unscaledDeltaTime); // 兼容实例：由唯一宿主每帧调用。
+driver.Dispose();                         // 该独立实例的宿主负责释放。
+```
+
+旧 Host 绑定单图 Graph Json、Entry Node Id、Ui Service、Video Target 与 Clips，并由自己的 Update 调用 Tick。可选 FSM 先 Load/Start，再创建 `IFsm<IVideoFlowDriver>` 并启动 `VideoFlowRunningState`；OnUpdate 调用 Tick，OnLeave 调用 Stop。同一 Driver 只选 Host、FSM 或手动 Tick 一个来源。新 MovieComponent 使用 GF 注册模块，不再挂这些兼容更新入口；迁移时同时移除原场景的旧启动绑定，避免同一业务重复播放。
+
+兼容 Driver 的 Start 可在 Ready、Completed、Stopped 启动，恢复全部初始值；运行中拒绝 Load，加载失败保留原图，Faulted 需重新 Load。现代入口使用前述显式目录/缓存/PlayChapter 规则。
 
 ## 扩展
 
 实现 IFlowNodeBehaviorFactory / IFlowNodeBehavior，并向自定义 NodeDefinitionRegistry 注册节点定义，交给 VideoFlowLoader(registry)。Complete 终结当前激活，Emit 发布非终结输出，Cancel 无跳转退出，Fail 终结流程。输出端口和边保留类型校验；控制端口驱动节点激活，数据端口读取运行值；两者独立。内置数据、修改和条件行为由驱动提供，自定义行为也可通过上下文读取输入与修改数据节点。
 
 ## 验证
+
+下列为既有验证记录；1.2.0 的完整验证、目标项目接入与发布证据待集成后记录，详见 Validation.md。
 
 Tests/Editor 覆盖加载、冻结参数、环、同类型视频切换顺序、暂停租约、UI 路由/取消、旧上下文、重入和故障清理。Tests/Unity 验证真实 VideoPlayer 会话对象隔离、纹理所有权、资源映射和 UI 服务桥；不以编辑模式测试声称平台解码或网络视频播放已验证。
 
@@ -141,7 +174,7 @@ protected override void OnInteractionBound()
 
 ## 数据节点与流程值统一
 
-原有 `common.text`、`common.number`、`common.boolean` 同时作为运行时的值容器，另提供 `common.integer`。节点 ID 是身份，名称用于显示；JSON 的 `value` 是初始值，驱动中的 `Values` 是当前值只读快照。数据节点无需走控制线即可被读取。每次 `Start` 恢复全部初始值，图内重新进入视频（包括同一个视频）保留修改，并从头创建新播放会话。图属性不被运行值修改。
+原有 `common.text`、`common.number`、`common.boolean` 同时作为运行时的值容器，另提供 `common.integer`。节点 ID 是身份，名称用于显示；JSON 的 `value` 是初始值，`Values` 是当前值只读快照。数据节点无需走控制线即可被读取。每次 `PlayChapter`（包括同章重播）恢复该章全部初始值，兼容 Driver 的 Start 也重置初始值；图内重新进入视频（包括同一个视频）保留修改，并创建新播放会话。图属性不被运行值修改，不提供跨章节共享值。
 
 - 数据节点 `valueOut` 输出当前值，可连接多个消费者；仅供读取，不触发节点执行。
 - 数据节点 `valueIn` 可选；只有控制线进入该节点时才采样并写入当前值，然后走 `next`。输入不形成别名，不递归计算，因此数据节点互连不会造成求值递归。

@@ -7,7 +7,7 @@
 1. 确认当前 Git 账号有 `juker74/MoveComponent` 私有仓库的访问权限，并已配置 Git 凭据管理器或系统钥匙串，使 Unity 调用 Git 时能使用现有凭据。不要把 token 写入 Git URL、manifest 或仓库文件。
 2. 本包在 `Plugins/ParadoxNotion` 内置完整 NodeCanvas / CanvasCore 源码与资源；CanvasCore 的 `FRAMEWORK_VERSION = 3.30`。若宿主项目已有 `Assets/Plugins/ParadoxNotion` 或其他副本，先将重复插件移出 `Assets`、备份到工程外，避免重复 GUID、程序集和类型。无需另行安装插件。
 3. 在目标项目 Packages/manifest.json 中合并 GameFrameX scoped registry，配置见 README 和 `project-manifest.registry.example.json`。
-4. 通过 Package Manager 的 Add package from git URL 使用 `https://github.com/juker74/MoveComponent.git#v1.1.0` 安装；GameFrameX 与 Unity 依赖版本由包的 package.json 声明。
+4. 通过 Package Manager 的 Add package from git URL 使用 `https://github.com/juker74/MoveComponent.git#v1.2.0` 安装；GameFrameX 与 Unity 依赖版本由包的 package.json 声明。本版发布与验证状态以 CHANGELOG 和 Validation.md 的实际记录为准。
 
 package.json 的 dependencies 使用 UPM 版本号。Git 地址写在宿主项目 manifest 的 dependencies 中。仓库同时提供 `project-manifest.git.example.json`，列出所有 GameFrameX 直接/传递依赖的 Git 地址和已核对版本标签；使用时同样合并已有 manifest，不能覆盖项目其他依赖。
 
@@ -44,7 +44,11 @@ Package Manager → Add package from disk → 选择 MoveComponent/package.json�
 | Assets/Scripts/Framework/Fsm | Runtime/Integrations/GameFrameX/Fsm |
 | Assets/Plugins/ParadoxNotion | Plugins/ParadoxNotion |
 
-引用 UI 的 JSON 仍使用 `命名空间.类名, 程序集简单名称`，不需要因包目录迁移重写 UI 身份。自己的 UI 类型所在 asmdef 应引用 `Game.Framework.MovieUI`，使用驱动时引用 `Game.VideoFlow.Contracts` / `Game.VideoFlow.Runtime`。
+引用 UI 的 JSON 仍使用 `命名空间.类名, 程序集简单名称`，不需要因包目录迁移重写 UI 身份。自己的 UI 类型所在 asmdef 应引用 `Game.Framework.MovieUI`，使用 Movie API 时引用 `Game.VideoFlow.Contracts` / `Game.VideoFlow.Runtime`；新公开类型的命名空间为 `GameFrameX.Movie.Runtime`。
+
+新场景使用 `MovieComponent → IMovieManager → MovieManager`，显式添加带有 `GameFrameXManualStartup` 标记的 MovieComponent，绑定目录 JSON、章节图、UI 服务及视频资源；具体配置见 [影视流程](VideoFlow.md)。同一框架注册只配置一个组件，重复组件不能接管现有模块。`MovieManager` 的 Update/Shutdown 由框架 BaseComponent 统一调用，业务不再手动 Tick/Dispose。组件的 `Play()` 使用配置播放默认章节；运行中可通过 `LoadChapter` 缓存其他章节，再显式 `PlayChapter`。
+
+已有 `VideoFlowDriver` / `VideoFlowHost` / `VideoFlowRunningState` 调用与场景身份继续保留。Driver 现为独立 MovieManager 的薄适配层，Host 与 FSM 继续驱动该兼容实例；同一 Driver 只选择 Host、FSM 或手动 Tick 其中一个更新来源。迁移到 MovieComponent 时移除对应的旧场景启动与更新绑定，避免同一业务同时启动两套入口。目录 GraphKey 的解析与章间决策仍由宿主负责。
 
 ## 执行包内测试
 

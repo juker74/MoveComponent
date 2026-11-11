@@ -1,6 +1,6 @@
 # 章节目录编辑
 
-一张 `ComposerGraph` 表示一章。章节目录资产维护章节列表、默认起始章节、每章对应的图和入口。此次扩展提供编辑、校验和 JSON 交换；现有 `VideoFlowHost` 仍运行单张图，章节调度器与自动切章尚未实现。
+一张 `ComposerGraph` 表示一章。章节目录资产维护章节列表、默认起始章节、每章对应的图和入口。运行时使用 `MovieComponent → IMovieManager → MovieManager`，支持缓存多个章节图，同时执行一个章节。章节完成后由业务显式决定下一次 `PlayChapter`，不会自动切章。
 
 ## 创建和配置
 
@@ -44,7 +44,7 @@ Story/
 }
 ```
 
-`graphKey` 自动按章节 ID 生成，是相对 bundle 的资源键。运行时资源接入层可据此获取图 JSON，不应将它理解成编辑器 `Assets` 路径。章节数组顺序被保留。
+`graphKey` 自动按章节 ID 生成，是相对 bundle 的资源键；运行时通过 `MovieChapterInfo.GraphKey` 读取。宿主资源接入层可据此取得图 JSON，再按 `ChapterId` 调用 `LoadChapter`。它不是编辑器 `Assets` 路径；模块不会自动访问磁盘、资源系统或网络。章节数组顺序被保留。
 
 导出复用现有图协议和视频驱动加载器，检查未知节点、端口/连线、视频来源、UI 类型、数据运算配置、章节身份和入口。全部校验与编码通过后才发布整批文件。原目录只在属于本工具输出且没有额外文件时允许替换；重导出会移除不再包含的章节 JSON，保留仍存在 JSON 的 Unity `.meta`。不要在导出目录中混放笔记或其他资源。
 
@@ -65,5 +65,8 @@ Story/
 - `Runtime/VideoNodes`：`ChapterCatalogDocument`、`ChapterDocument`、`ChapterCatalogJsonCodec`，纯数据，不引用 UnityEditor 或 NodeCanvas。
 - `Editor/VideoNodes`：`ChapterCatalogAsset`、`ChapterCatalogInspector`、`ChapterCatalogFileService`，负责资产引用、编辑与 bundle 交换。
 - `ChapterCatalogFileService.Validate(asset)` 返回目录纯数据；`Export(absoluteDirectory, asset)` 写完整 bundle；`Import(absoluteCatalogPath, newAssetFolder)` 导入为全新资产。
+- `GameFrameX.Movie.Runtime.IMovieManager`：`LoadCatalog` 安装目录描述，`LoadChapter` 校验并缓存显式提供的图 JSON，`PlayChapter` 运行一个已缓存章节。三者互不隐含；仅加载目录不会加载图或开始播放。
 
-章节解锁、通关、存档、跨章节变量与实际切章不属于本次编辑器扩展。
+场景中的 `MovieComponent.Play()` 会预检 Catalog Json 和已配置的 Chapter Graphs，然后加载这些图并播放默认起始章节。可以只绑定部分章节，但必须包含默认起始章节。其余图可在资源取得后调用组件的 `LoadChapter(chapterId, graphJson)` 加入缓存，再显式调用 `PlayChapter(chapterId)`。章节 ID 按精确身份匹配，不从图 ID 或文件名推断；不同缓存章节不能共用同一 Graph 文档 ID。
+
+`Stop` 保留目录、图缓存和当前章节供查询；`UnloadChapter` 仅移除该图缓存（若正在选择该章则一并释放执行数据），保留目录项；`UnloadAllChapters` 保留目录；`UnloadCatalog` 连目录一起清除。加载、重播、资源绑定和事件规则见 [影视流程](VideoFlow.md)。章节解锁、通关、存档与跨章节变量由宿主实现。

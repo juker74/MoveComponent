@@ -1,5 +1,25 @@
 # 包导出验证
 
+## 1.2.0 — GF Movie 模块与多章节缓存
+
+验证日期：2026-11-11。Unity 2022.3.62f3，隔离项目通过本地 `file:` 包安装，启用图形环境。全部五个测试程序集共 **163 项：163 通过、0 失败、0 跳过**；其中一个 UnityTest 进入真实 Play 模式验证晚创建 BaseComponent 的生命周期。NUnit 结果：`/tmp/MoveComponent-movie-complete.xml`。
+
+| 程序集 | 通过 | 失败 |
+| --- | --- | --- |
+| Game.VideoFlow.Tests.dll | 68 | 0 |
+| Game.VideoFlow.Unity.Tests.dll | 38 | 0 |
+| GameFrameX.NodeComposer.Tests.dll | 16 | 0 |
+| GameFrameX.NodeComposer.Video.Editor.Tests.dll | 30 | 0 |
+| GameFrameX.NodeComposer.Video.Tests.dll | 11 | 0 |
+
+新增 56 项覆盖章节缓存独立性、非法目标保留当前运行、切章/重播清理与值初始化、卸载范围、迟到 UI 回调、事件章节身份、事件内卸载、实际 GF Update/Shutdown、场景绑定完整预检、组件禁用/销毁、重复组件所有权、回调中重入 Play 和外部 RenderTexture 所有权。此前 107 项编辑器/协议/驱动测试继续通过。核心和组件分别观察到明确的 NUnit 失败后再实施对应修复。
+
+`python3 Tools~/test_validate_package.py` 和 `python3 Tools~/validate_package.py` 均通过：**512 个 C# 文件、15 个程序集、771 个唯一 GUID**，包括新增 asmref 的目标检查。内置插件与已有脚本 GUID 未修改，未增加依赖版本。
+
+Unity 启动日志包含授权/令牌、CDN、usbmuxd 及偶发 Android 目标扫描进程消息；它们发生于测试环境，不能把日志描述为完全无噪声。原有 NodeCanvas 临时图 Undo 警告沿用 1.1.0 的记录。此次没有包内 C# 编译错误，NUnit 没有失败或跳过。此结果不代表已验证所有平台解码、IL2CPP 或具体游戏资源加载。
+
+私有远端 Git 标签和目标 GameFrameX.Unity 项目集成验证待完成；后续仅在观察到实际结果后补充证据。以下历史记录保持原版本结论。
+
 ## 1.1.0 — 章节目录编辑器
 
 验证日期：2026-11-11。Unity 版本：2022.3.62f3。

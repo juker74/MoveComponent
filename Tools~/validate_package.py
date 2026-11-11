@@ -36,12 +36,17 @@ for path in root.rglob("*.asmdef"):
             assembly_guids[guid.group(1)] = data["name"]
     if "Editor" in path.relative_to(root).parts:
         check(data.get("includePlatforms") == ["Editor"], f"Editor assembly not isolated: {path}")
-external = {"SimpleJSON.Runtime", "GameFrameX.UI.Runtime",
+external = {"SimpleJSON.Runtime", "GameFrameX.Runtime", "GameFrameX.UI.Runtime",
             "GameFrameX.UI.UGUI.Runtime", "GameFrameX.FSM.Runtime"}
 for name, data in assemblies.items():
     for reference in data.get("references", []):
         target = assembly_guids.get(reference[5:]) if reference.startswith("GUID:") else reference
         check(target in assemblies or target in external, f"Undeclared assembly: {name} -> {reference}")
+for path in root.rglob("*.asmref"):
+    reference = json.loads(path.read_text(encoding="utf-8-sig"))["reference"]
+    target = assembly_guids.get(reference[5:]) if reference.startswith("GUID:") else reference
+    check(target in assemblies or target in external,
+          f"Undeclared assembly: {path.relative_to(root)} -> {reference}")
 
 seen_guids = {}
 for path in root.rglob("*"):
