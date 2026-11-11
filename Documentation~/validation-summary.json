@@ -2,22 +2,22 @@
   "date": "2026-11-11",
   "unity": "2022.3.62f3",
   "mode": "EditMode including a real Play-mode lifecycle regression; isolated project, graphics enabled",
-  "packageSource": "Private remote Git UPM v1.2.0 verified in the isolated validation project and GameFrameX.Unity target project; local file UPM also verified",
+  "packageSource": "Private remote Git UPM v1.2.1 and local file UPM verified in the isolated validation project",
   "dependencies": "Pinned versions from dependency-sources.json; isolated project uses existing GameFrameX/Unity package caches. NodeCanvas and CanvasCore come from this package.",
   "result": "Passed",
-  "total": 165,
-  "passed": 165,
+  "total": 184,
+  "passed": 184,
   "failed": 0,
   "skipped": 0,
   "assemblies": {
     "Game.VideoFlow.Tests.dll": {
-      "total": "68",
-      "passed": "68",
+      "total": "79",
+      "passed": "79",
       "failed": "0"
     },
     "Game.VideoFlow.Unity.Tests.dll": {
-      "total": "40",
-      "passed": "40",
+      "total": "48",
+      "passed": "48",
       "failed": "0"
     },
     "GameFrameX.NodeComposer.Tests.dll": {
@@ -37,87 +37,37 @@
     }
   },
   "structureValidation": "512 C# sources, 15 assemblies, 771 unique GUIDs; all package resources and declared asmdef/asmref references present",
-  "version": "1.2.0",
-  "testEvidence": "MoveComponent-movie-git.xml",
-  "localFileTestEvidence": "MoveComponent-movie-final-local.xml",
-  "gitTag": "v1.2.0",
-  "gitCommit": "a31e7c8af7b85a28bf7fb7e454284a652c3904d6",
-  "remoteGitValidation": "Passed: private remote Git UPM v1.2.0 resolved to a31e7c8af7b85a28bf7fb7e454284a652c3904d6; 165/165 tests passed across five assemblies, zero failures and zero skips",
-  "targetProjectValidation": "Passed: GameFrameX.Unity imported private Git UPM v1.2.0; compilation, package resources, existing graph asset/script and MovieComponent/MovieManager integration verified",
+  "version": "1.2.1",
+  "localFileTestEvidence": "MoveComponent-logging-final-local.xml",
+  "testEvidence": "MoveComponent-logging-git.xml",
+  "regressionRedEvidence": "MoveComponent-logging-red.xml (14 expected new failures before implementation)",
+  "gitTag": "v1.2.1",
+  "gitCommit": "0e049c5af8071e40d38fac4f2139112855281603",
+  "remoteGitValidation": "Passed: private remote Git UPM v1.2.1 resolved to 0e049c5af8071e40d38fac4f2139112855281603; 184/184 tests passed across five assemblies, zero failures and zero skips",
   "validatorRegression": "Passed: asmref and bundled GUID targets resolve; unknown GUID targets rejected",
-  "compiledAssemblies": [
-    "ParadoxNotion",
-    "NodeCanvas",
-    "Game.VideoFlow.Tests",
-    "GameFrameX.NodeComposer.Video.Editor",
-    "GameFrameX.NodeComposer.Video.Editor.Tests",
-    "Game.Framework.VideoFlow",
-    "GameFrameX.NodeComposer.Editor",
-    "Game.VideoFlow.Contracts",
-    "GameFrameX.NodeComposer.Runtime",
-    "Game.VideoFlow.Unity.Tests",
-    "GameFrameX.NodeComposer.Video.Tests",
-    "Game.VideoFlow.Runtime",
-    "GameFrameX.NodeComposer.Video.Runtime",
-    "GameFrameX.NodeComposer.Tests",
-    "Game.Framework.MovieUI"
-  ],
-  "editorResources": [
-    "StyleSheet/StyleSheetDark",
-    "StyleSheet/StyleSheetLight",
-    "TypeIcons/Implicit/System.Object",
-    "Manual",
-    "Resources",
-    "Support",
-    "Community"
-  ],
-  "targetProjectEvidence": {
-    "report": "MoveComponent-movie-project-report.json",
-    "status": "Passed",
-    "packageSource": "Git",
-    "version": "1.2.0",
-    "resolvedGitHash": "a31e7c8af7b85a28bf7fb7e454284a652c3904d6",
-    "graphType": "GameFrameX.NodeComposer.Editor.ComposerGraph",
-    "graphScriptPath": "Packages/com.gameframex.unity.movecomponent/Editor/NodeComposer/ComposerGraph.cs",
-    "graphScriptGuid": "22a41af39b6684b1087cc91c914c50b7",
-    "catalogType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogAsset",
-    "inspectorType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogInspector",
-    "boundInspectorType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogInspector",
-    "inspectorTargetMatched": true,
-    "catalogCreateMenu": "Assets/Create/GameFrameX/Chapter Catalog",
-    "verifiedMenuItems": [
-      "Tools/GameFrameX/Node Composer/创建章节目录",
-      "Tools/GameFrameX/Node Composer/导入章节目录 JSON"
-    ],
-    "movieComponentType": "GameFrameX.Movie.Runtime.MovieComponent",
-    "movieManagerType": "GameFrameX.Movie.Runtime.MovieManager",
-    "movieInterfaceType": "GameFrameX.Movie.Runtime.IMovieManager",
-    "movieRuntimeAssembly": "Game.VideoFlow.Runtime",
-    "movieModuleContractMatched": true,
-    "movieComponentUsesGfLifecycle": true,
-    "temporaryValidationHelpersRemoved": true
-  },
+  "loggingScope": "Movie runtime fixed logging sinks removed; host-selected optional FlowEvent notifications. Existing GF module, UGUI, assemblies and dependency versions retained.",
+  "codeReview": "Independent read-only review completed without actionable correctness findings; requested fault/cleanup, attached UI context and reentrant diagnostic cases added and passing.",
   "environmentNotes": "Unity startup includes licensing/token, CDN/usbmuxd and occasional Android target-scanner process messages outside NUnit. Existing NodeCanvas temporary graph Undo warnings remain. No package C# compiler errors or failing/skipped tests.",
   "previousVersionValidation": {
     "date": "2026-11-11",
     "unity": "2022.3.62f3",
-    "mode": "EditMode, isolated project, graphics enabled",
-    "packageSource": "Private remote Git UPM v1.1.0 verified in isolated and GameFrameX.Unity target projects; isolated local file UPM also verified",
+    "mode": "EditMode including a real Play-mode lifecycle regression; isolated project, graphics enabled",
+    "packageSource": "Private remote Git UPM v1.2.0 verified in the isolated validation project and GameFrameX.Unity target project; local file UPM also verified",
     "dependencies": "Pinned versions from dependency-sources.json; isolated project uses existing GameFrameX/Unity package caches. NodeCanvas and CanvasCore come from this package.",
     "result": "Passed",
-    "total": 107,
-    "passed": 107,
+    "total": 165,
+    "passed": 165,
     "failed": 0,
     "skipped": 0,
     "assemblies": {
       "Game.VideoFlow.Tests.dll": {
-        "total": "42",
-        "passed": "42",
+        "total": "68",
+        "passed": "68",
         "failed": "0"
       },
       "Game.VideoFlow.Unity.Tests.dll": {
-        "total": "8",
-        "passed": "8",
+        "total": "40",
+        "passed": "40",
         "failed": "0"
       },
       "GameFrameX.NodeComposer.Tests.dll": {
@@ -136,14 +86,15 @@
         "failed": "0"
       }
     },
-    "structureValidation": "507 C# sources, 15 assemblies, 764 unique GUIDs; all package resources and declared references present",
-    "version": "1.1.0",
-    "testEvidence": "MoveComponent-chapters-git.xml",
-    "localFileTestEvidence": "MoveComponent-chapters-complete.xml",
-    "gitTag": "v1.1.0",
-    "gitCommit": "2b008ad8fad7d3af61745c8d812573da35e4ea72",
-    "remoteGitValidation": "Passed: isolated private remote Git package v1.1.0; 107/107 EditMode tests across five assemblies, zero failures and zero skips",
-    "targetProjectValidation": "Passed: GameFrameX.Unity version 1.1.0 from Git; compilation, package resources, existing graph asset/script and chapter Editor entry points verified",
+    "structureValidation": "512 C# sources, 15 assemblies, 771 unique GUIDs; all package resources and declared asmdef/asmref references present",
+    "version": "1.2.0",
+    "testEvidence": "MoveComponent-movie-git.xml",
+    "localFileTestEvidence": "MoveComponent-movie-final-local.xml",
+    "gitTag": "v1.2.0",
+    "gitCommit": "a31e7c8af7b85a28bf7fb7e454284a652c3904d6",
+    "remoteGitValidation": "Passed: private remote Git UPM v1.2.0 resolved to a31e7c8af7b85a28bf7fb7e454284a652c3904d6; 165/165 tests passed across five assemblies, zero failures and zero skips",
+    "targetProjectValidation": "Passed: GameFrameX.Unity imported private Git UPM v1.2.0; compilation, package resources, existing graph asset/script and MovieComponent/MovieManager integration verified",
+    "validatorRegression": "Passed: asmref and bundled GUID targets resolve; unknown GUID targets rejected",
     "compiledAssemblies": [
       "ParadoxNotion",
       "NodeCanvas",
@@ -161,7 +112,6 @@
       "GameFrameX.NodeComposer.Tests",
       "Game.Framework.MovieUI"
     ],
-    "validatorRegression": "Passed: bundled GUID target resolves; unknown GUID target rejected",
     "editorResources": [
       "StyleSheet/StyleSheetDark",
       "StyleSheet/StyleSheetLight",
@@ -172,32 +122,96 @@
       "Community"
     ],
     "targetProjectEvidence": {
-      "report": "MoveComponent-chapter-project-report.json",
+      "report": "MoveComponent-movie-project-report.json",
       "status": "Passed",
       "packageSource": "Git",
-      "version": "1.1.0",
+      "version": "1.2.0",
+      "resolvedGitHash": "a31e7c8af7b85a28bf7fb7e454284a652c3904d6",
+      "graphType": "GameFrameX.NodeComposer.Editor.ComposerGraph",
       "graphScriptPath": "Packages/com.gameframex.unity.movecomponent/Editor/NodeComposer/ComposerGraph.cs",
       "graphScriptGuid": "22a41af39b6684b1087cc91c914c50b7",
-      "existingGraphAsset": "Loaded successfully",
       "catalogType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogAsset",
+      "inspectorType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogInspector",
       "boundInspectorType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogInspector",
       "inspectorTargetMatched": true,
+      "catalogCreateMenu": "Assets/Create/GameFrameX/Chapter Catalog",
       "verifiedMenuItems": [
         "Tools/GameFrameX/Node Composer/创建章节目录",
         "Tools/GameFrameX/Node Composer/导入章节目录 JSON"
       ],
-      "catalogCreateMenu": "Assets/Create/GameFrameX/Chapter Catalog",
+      "movieComponentType": "GameFrameX.Movie.Runtime.MovieComponent",
+      "movieManagerType": "GameFrameX.Movie.Runtime.MovieManager",
+      "movieInterfaceType": "GameFrameX.Movie.Runtime.IMovieManager",
+      "movieRuntimeAssembly": "Game.VideoFlow.Runtime",
+      "movieModuleContractMatched": true,
+      "movieComponentUsesGfLifecycle": true,
       "temporaryValidationHelpersRemoved": true
     },
-    "importUndo": "Temporary graph construction is reverted within its isolated group before final asset creation; prior user Undo and imported graph data are preserved. NodeCanvas emits empty-JSON warnings while reverting temporary graphs.",
+    "environmentNotes": "Unity startup includes licensing/token, CDN/usbmuxd and occasional Android target-scanner process messages outside NUnit. Existing NodeCanvas temporary graph Undo warnings remain. No package C# compiler errors or failing/skipped tests.",
     "previousVersionValidation": {
-      "version": "1.0.1",
-      "packageSource": "Private remote Git UPM resolved in GameFrameX.Unity; isolated local file UPM also verified",
-      "gitCommit": "155c1783a226d76f2b5748dac9b0b3f8998bde8a",
-      "total": 87,
-      "passed": 87,
+      "date": "2026-11-11",
+      "unity": "2022.3.62f3",
+      "mode": "EditMode, isolated project, graphics enabled",
+      "packageSource": "Private remote Git UPM v1.1.0 verified in isolated and GameFrameX.Unity target projects; isolated local file UPM also verified",
+      "dependencies": "Pinned versions from dependency-sources.json; isolated project uses existing GameFrameX/Unity package caches. NodeCanvas and CanvasCore come from this package.",
+      "result": "Passed",
+      "total": 107,
+      "passed": 107,
       "failed": 0,
       "skipped": 0,
+      "assemblies": {
+        "Game.VideoFlow.Tests.dll": {
+          "total": "42",
+          "passed": "42",
+          "failed": "0"
+        },
+        "Game.VideoFlow.Unity.Tests.dll": {
+          "total": "8",
+          "passed": "8",
+          "failed": "0"
+        },
+        "GameFrameX.NodeComposer.Tests.dll": {
+          "total": "16",
+          "passed": "16",
+          "failed": "0"
+        },
+        "GameFrameX.NodeComposer.Video.Editor.Tests.dll": {
+          "total": "30",
+          "passed": "30",
+          "failed": "0"
+        },
+        "GameFrameX.NodeComposer.Video.Tests.dll": {
+          "total": "11",
+          "passed": "11",
+          "failed": "0"
+        }
+      },
+      "structureValidation": "507 C# sources, 15 assemblies, 764 unique GUIDs; all package resources and declared references present",
+      "version": "1.1.0",
+      "testEvidence": "MoveComponent-chapters-git.xml",
+      "localFileTestEvidence": "MoveComponent-chapters-complete.xml",
+      "gitTag": "v1.1.0",
+      "gitCommit": "2b008ad8fad7d3af61745c8d812573da35e4ea72",
+      "remoteGitValidation": "Passed: isolated private remote Git package v1.1.0; 107/107 EditMode tests across five assemblies, zero failures and zero skips",
+      "targetProjectValidation": "Passed: GameFrameX.Unity version 1.1.0 from Git; compilation, package resources, existing graph asset/script and chapter Editor entry points verified",
+      "compiledAssemblies": [
+        "ParadoxNotion",
+        "NodeCanvas",
+        "Game.VideoFlow.Tests",
+        "GameFrameX.NodeComposer.Video.Editor",
+        "GameFrameX.NodeComposer.Video.Editor.Tests",
+        "Game.Framework.VideoFlow",
+        "GameFrameX.NodeComposer.Editor",
+        "Game.VideoFlow.Contracts",
+        "GameFrameX.NodeComposer.Runtime",
+        "Game.VideoFlow.Unity.Tests",
+        "GameFrameX.NodeComposer.Video.Tests",
+        "Game.VideoFlow.Runtime",
+        "GameFrameX.NodeComposer.Video.Runtime",
+        "GameFrameX.NodeComposer.Tests",
+        "Game.Framework.MovieUI"
+      ],
+      "validatorRegression": "Passed: bundled GUID target resolves; unknown GUID target rejected",
       "editorResources": [
         "StyleSheet/StyleSheetDark",
         "StyleSheet/StyleSheetLight",
@@ -207,7 +221,66 @@
         "Support",
         "Community"
       ],
-      "existingGraph": "Existing ComposerGraph asset resolves to the package script with retained GUID 22a41af39b6684b1087cc91c914c50b7"
+      "targetProjectEvidence": {
+        "report": "MoveComponent-chapter-project-report.json",
+        "status": "Passed",
+        "packageSource": "Git",
+        "version": "1.1.0",
+        "graphScriptPath": "Packages/com.gameframex.unity.movecomponent/Editor/NodeComposer/ComposerGraph.cs",
+        "graphScriptGuid": "22a41af39b6684b1087cc91c914c50b7",
+        "existingGraphAsset": "Loaded successfully",
+        "catalogType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogAsset",
+        "boundInspectorType": "GameFrameX.NodeComposer.Video.Editor.ChapterCatalogInspector",
+        "inspectorTargetMatched": true,
+        "verifiedMenuItems": [
+          "Tools/GameFrameX/Node Composer/创建章节目录",
+          "Tools/GameFrameX/Node Composer/导入章节目录 JSON"
+        ],
+        "catalogCreateMenu": "Assets/Create/GameFrameX/Chapter Catalog",
+        "temporaryValidationHelpersRemoved": true
+      },
+      "importUndo": "Temporary graph construction is reverted within its isolated group before final asset creation; prior user Undo and imported graph data are preserved. NodeCanvas emits empty-JSON warnings while reverting temporary graphs.",
+      "previousVersionValidation": {
+        "version": "1.0.1",
+        "packageSource": "Private remote Git UPM resolved in GameFrameX.Unity; isolated local file UPM also verified",
+        "gitCommit": "155c1783a226d76f2b5748dac9b0b3f8998bde8a",
+        "total": 87,
+        "passed": 87,
+        "failed": 0,
+        "skipped": 0,
+        "editorResources": [
+          "StyleSheet/StyleSheetDark",
+          "StyleSheet/StyleSheetLight",
+          "TypeIcons/Implicit/System.Object",
+          "Manual",
+          "Resources",
+          "Support",
+          "Community"
+        ],
+        "existingGraph": "Existing ComposerGraph asset resolves to the package script with retained GUID 22a41af39b6684b1087cc91c914c50b7"
+      }
     }
+  },
+  "targetProjectValidation": "Passed: GameFrameX.Unity loaded Git v1.2.1 with expected commit; diagnostic interfaces, retained GF module/component contracts and graph script GUID verified. Temporary helper removed; only the MoveComponent manifest reference changed.",
+  "targetProjectEvidence": {
+    "report": "MoveComponent-logging-project-report.json",
+    "status": "Passed",
+    "version": "1.2.1",
+    "packageSource": "Git",
+    "resolvedGitHash": "0e049c5af8071e40d38fac4f2139112855281603",
+    "packagePath": "/Users/user/Demo/GameFrameX.Unity/Library/PackageCache/com.gameframex.unity.movecomponent@0e049c5af8",
+    "error": "",
+    "diagnosticKind": true,
+    "originalExceptionProperty": true,
+    "relatedEventProperty": true,
+    "safeDispatcher": true,
+    "uiDiagnosticEvent": true,
+    "gfModuleContract": true,
+    "gfComponentContract": true,
+    "noFixedLogging": true,
+    "preservedGraphGuid": true,
+    "projectRoot": "/Users/user/Demo/GameFrameX.Unity",
+    "temporaryValidationHelpersRemoved": true,
+    "otherManifestBytesPreserved": true
   }
 }

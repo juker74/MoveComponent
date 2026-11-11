@@ -1,5 +1,25 @@
 # 包导出验证
 
+## 1.2.1 — 可选日志诊断
+
+验证日期：2026-11-11。Unity 2022.3.62f3，启用图形环境。隔离项目分别通过本地 `file:` 与私有远端 Git `v1.2.1` 安装，五个 EditMode 测试程序集两次均为 **184 项：184 通过、0 失败、0 跳过**。Git 包解析到代码提交 `0e049c5af8071e40d38fac4f2139112855281603`。证据：`/tmp/MoveComponent-logging-final-local.xml` 与 `/tmp/MoveComponent-logging-git.xml`。
+
+| 程序集 | 通过 | 失败 |
+| --- | --- | --- |
+| Game.VideoFlow.Tests.dll | 79 | 0 |
+| Game.VideoFlow.Unity.Tests.dll | 48 | 0 |
+| GameFrameX.NodeComposer.Tests.dll | 16 | 0 |
+| GameFrameX.NodeComposer.Video.Editor.Tests.dll | 30 | 0 |
+| GameFrameX.NodeComposer.Video.Tests.dll | 11 | 0 |
+
+本次新增 19 项回归，覆盖行为创建、进入、更新、退出、释放与主动 Fail 的故障身份；原始异常保留、附属 UI 输入端口定位、主异常与多重清理异常、监听隔离与诊断递归抑制、诊断回调内 Stop/卸载、自动播放错误、Host 无固定日志、UI 绑定和关闭异常下的完整释放。实施前的 RED 结果有 14 项预期新增失败：`/tmp/MoveComponent-logging-red.xml`。独立只读审查未发现需修复的正确性问题，其建议补充的边界测试已纳入最终通过结果。
+
+包结构与验证器回归检查通过：**512 个 C# 文件、15 个程序集、771 个唯一 GUID**。Movie 运行时代码不再固定调用 GFX 或 Unity 日志；保留现有 GFX 模块与 UGUI 依赖、程序集和插件源码/GUID。不代表脱离 GFX 的完整独立核心，也不代表所有平台解码或 IL2CPP 已验证。
+
+目标 `/Users/user/Demo/GameFrameX.Unity` 项目已实际导入 Git `v1.2.1` 并解析到上述提交；报告 `status=Passed`，确认 Diagnostic、原始 Exception、RelatedEventKind、安全分发器和 UI 诊断事件可用，现有 GFX 模块/组件契约与图脚本 GUID 保留。临时验证脚本及其 `.meta` 已移除；工程 manifest 的其他字节保持不变。目标工程完成导入/接口集成核对，184 项测试来自隔离项目。证据：`/tmp/MoveComponent-logging-project-report.json`。
+
+发布标签 `v1.2.1` 固定指向上述代码提交；后续文档证据补录不重写标签。以下保留历史版本验证。
+
 ## 1.2.0 — GF Movie 模块与多章节缓存
 
 验证日期：2026-11-11。Unity 2022.3.62f3，隔离项目分别通过本地 `file:` 和私有远端 Git `v1.2.0` 包安装，均启用图形环境。两次运行的五个测试程序集均为 **165 项：165 通过、0 失败、0 跳过**；其中一个 UnityTest 进入真实 Play 模式验证晚创建 BaseComponent 的生命周期。本地 NUnit 结果：`/tmp/MoveComponent-movie-final-local.xml`；远端 Git NUnit 结果：`/tmp/MoveComponent-movie-git.xml`。远端 Git 包解析到代码提交 `a31e7c8af7b85a28bf7fb7e454284a652c3904d6`。
