@@ -38,7 +38,7 @@ for name, data in assemblies.items():
 seen_guids = {}
 for path in root.rglob("*"):
     relative = path.relative_to(root)
-    if any(part.endswith("~") for part in relative.parts) or path.name.startswith("."):
+    if any(part.endswith("~") for part in relative.parts) or any(part.startswith(".") for part in relative.parts):
         continue
     if path.suffix == ".meta":
         match = re.search(r"^guid: ([0-9a-f]{32})$", path.read_text(), re.M)
