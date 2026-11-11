@@ -1,0 +1,8 @@
+{
+  "name": "GameFrameX.NodeComposer.Runtime",
+  "rootNamespace": "GameFrameX.NodeComposer",
+  "references": [
+    "SimpleJSON.Runtime"
+  ],
+  "noEngineReferences": true
+}

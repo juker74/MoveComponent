@@ -1,0 +1,14 @@
+{
+  "name": "GameFrameX.NodeComposer.Video.Tests",
+  "references": [
+    "GameFrameX.NodeComposer.Runtime",
+    "GameFrameX.NodeComposer.Video.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}

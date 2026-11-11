@@ -1,0 +1,14 @@
+{
+  "name": "GameFrameX.NodeComposer.Video.Editor",
+  "rootNamespace": "GameFrameX.NodeComposer.Video.Editor",
+  "references": [
+    "GameFrameX.NodeComposer.Runtime",
+    "GameFrameX.NodeComposer.Editor",
+    "GameFrameX.NodeComposer.Video.Runtime",
+    "ParadoxNotion",
+    "Game.Framework.MovieUI"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

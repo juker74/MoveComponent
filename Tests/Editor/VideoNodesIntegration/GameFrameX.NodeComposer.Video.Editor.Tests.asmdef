@@ -1,0 +1,20 @@
+{
+  "name": "GameFrameX.NodeComposer.Video.Editor.Tests",
+  "references": [
+    "GameFrameX.NodeComposer.Runtime",
+    "GameFrameX.NodeComposer.Editor",
+    "GameFrameX.NodeComposer.Video.Runtime",
+    "GameFrameX.NodeComposer.Video.Editor",
+    "ParadoxNotion",
+    "Game.Framework.MovieUI",
+    "GameFrameX.UI.Runtime",
+    "GameFrameX.UI.UGUI.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}

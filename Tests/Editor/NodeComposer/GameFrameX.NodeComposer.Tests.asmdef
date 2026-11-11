@@ -1,0 +1,15 @@
+{
+  "name": "GameFrameX.NodeComposer.Tests",
+  "references": [
+    "GameFrameX.NodeComposer.Runtime",
+    "GameFrameX.NodeComposer.Editor",
+    "ParadoxNotion"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}

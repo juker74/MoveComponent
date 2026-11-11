@@ -1,0 +1,11 @@
+{
+  "name": "GameFrameX.NodeComposer.Editor",
+  "rootNamespace": "GameFrameX.NodeComposer.Editor",
+  "references": [
+    "GameFrameX.NodeComposer.Runtime",
+    "ParadoxNotion"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

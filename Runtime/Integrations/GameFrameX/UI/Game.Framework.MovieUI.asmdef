@@ -1,0 +1,9 @@
+{
+  "name": "Game.Framework.MovieUI",
+  "rootNamespace": "Game.Framework.UI",
+  "references": [
+    "GameFrameX.UI.Runtime",
+    "GameFrameX.UI.UGUI.Runtime",
+    "GameFrameX.NodeComposer.Video.Runtime"
+  ]
+}

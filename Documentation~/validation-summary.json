@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-11",
+  "unity": "2022.3.62f3",
+  "mode": "EditMode, isolated project, graphics enabled",
+  "packageSource": "Local Git UPM URL with version tag, installed in Library/PackageCache; local file UPM also verified",
+  "dependencies": "Installed versions from dependency-sources.json; isolated project uses offline local package cache sources. NodeCanvas installed separately.",
+  "result": "Passed",
+  "total": 87,
+  "passed": 87,
+  "failed": 0,
+  "skipped": 0,
+  "assemblies": {
+    "Game.VideoFlow.Tests.dll": {
+      "total": "42",
+      "passed": "42",
+      "failed": "0"
+    },
+    "Game.VideoFlow.Unity.Tests.dll": {
+      "total": "8",
+      "passed": "8",
+      "failed": "0"
+    },
+    "GameFrameX.NodeComposer.Tests.dll": {
+      "total": "16",
+      "passed": "16",
+      "failed": "0"
+    },
+    "GameFrameX.NodeComposer.Video.Editor.Tests.dll": {
+      "total": "10",
+      "passed": "10",
+      "failed": "0"
+    },
+    "GameFrameX.NodeComposer.Video.Tests.dll": {
+      "total": "11",
+      "passed": "11",
+      "failed": "0"
+    }
+  },
+  "structureValidation": "46 C# sources, 13 assemblies, 86 unique GUIDs; no machine-specific source paths"
+}

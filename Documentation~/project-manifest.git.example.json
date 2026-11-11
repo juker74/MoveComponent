@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "com.gameframex.unity": "https://github.com/gameframex/com.gameframex.unity.git#2.5.4",
+    "com.gameframex.unity.litjson": "https://github.com/gameframex/com.gameframex.unity.litjson.git#1.2.2",
+    "com.gameframex.unity.readassets": "https://github.com/gameframex/com.gameframex.unity.readassets.git#1.2.1",
+    "com.gameframex.unity.cysharp.unitask": "https://github.com/gameframex/com.gameframex.unity.cysharp.unitask.git#2.6.2",
+    "com.gameframex.unity.json.simplejson": "https://github.com/gameframex/com.gameframex.unity.json.simplejson.git#1.1.2",
+    "com.gameframex.unity.ui": "https://github.com/gameframex/com.gameframex.unity.ui.git#2.11.2",
+    "com.gameframex.unity.asset": "https://github.com/gameframex/com.gameframex.unity.asset.git#3.2.0",
+    "com.gameframex.unity.event": "https://github.com/gameframex/com.gameframex.unity.event.git#1.4.0",
+    "com.gameframex.unity.localization": "https://github.com/gameframex/com.gameframex.unity.localization.git#2.3.2",
+    "com.gameframex.unity.setting": "https://github.com/gameframex/com.gameframex.unity.setting.git#1.6.1",
+    "com.gameframex.unity.tuyoogame.yooasset": "https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.git#2.9.4",
+    "com.gameframex.unity.ui.ugui": "https://github.com/gameframex/com.gameframex.unity.ui.ugui.git#2.6.3",
+    "com.gameframex.unity.fsm": "https://github.com/gameframex/com.gameframex.unity.fsm.git#1.2.0",
+    "com.gameframex.unity.movecomponent": "https://github.com/juker74/MoveComponent.git#v1.0.0",
+    "com.unity.ugui": "1.0.0",
+    "com.unity.textmeshpro": "3.0.9",
+    "com.unity.modules.audio": "1.0.0",
+    "com.unity.modules.video": "1.0.0",
+    "com.unity.modules.imgui": "1.0.0",
+    "com.unity.modules.imageconversion": "1.0.0",
+    "com.unity.modules.uielements": "1.0.0",
+    "com.unity.modules.ai": "1.0.0",
+    "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.physics2d": "1.0.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Game.Framework.VideoFlow",
+  "rootNamespace": "Game.Framework",
+  "references": [
+    "Game.VideoFlow.Contracts",
+    "GameFrameX.FSM.Runtime"
+  ],
+  "noEngineReferences": true
+}

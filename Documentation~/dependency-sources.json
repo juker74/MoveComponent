@@ -1,0 +1,293 @@
+{
+  "package": "com.gameframex.unity.movecomponent",
+  "testedUnity": "2022.3.62f3",
+  "registry": {
+    "name": "GameFrameX",
+    "url": "https://gameframex.upm.alianblank.uk",
+    "scopes": [
+      "com.gameframex.unity"
+    ]
+  },
+  "packages": {
+    "com.gameframex.unity": {
+      "version": "2.5.4",
+      "git": "https://github.com/gameframex/com.gameframex.unity.git",
+      "dependencies": {
+        "com.gameframex.unity.litjson": "1.2.2",
+        "com.unity.modules.androidjni": "1.0.0",
+        "com.unity.modules.animation": "1.0.0",
+        "com.unity.modules.assetbundle": "1.0.0",
+        "com.unity.modules.audio": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.gameframex.unity.readassets": "1.2.1",
+        "com.gameframex.unity.cysharp.unitask": "2.6.2"
+      },
+      "direct": true,
+      "tag": "2.5.4",
+      "commit": "50c36dad78fc85cd7762d78451ae71d07d1891ac"
+    },
+    "com.gameframex.unity.litjson": {
+      "version": "1.2.2",
+      "git": "https://github.com/gameframex/com.gameframex.unity.litjson.git",
+      "dependencies": {},
+      "direct": true,
+      "tag": "1.2.2",
+      "commit": "f23638570da3fa49bf2ebc2e73ee5befa15af25e"
+    },
+    "com.unity.modules.androidjni": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": false
+    },
+    "com.unity.modules.animation": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": false
+    },
+    "com.unity.modules.assetbundle": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": false
+    },
+    "com.unity.modules.audio": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": true
+    },
+    "com.unity.modules.imgui": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": true
+    },
+    "com.unity.modules.jsonserialize": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": false
+    },
+    "com.unity.modules.unitywebrequest": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": false
+    },
+    "com.gameframex.unity.readassets": {
+      "version": "1.2.1",
+      "git": "https://github.com/gameframex/com.gameframex.unity.readassets.git",
+      "dependencies": {},
+      "direct": true,
+      "tag": "1.2.1",
+      "commit": "0888d2809226c2c4376ed4829e16aca3748c494b"
+    },
+    "com.gameframex.unity.cysharp.unitask": {
+      "version": "2.6.2",
+      "git": "https://github.com/gameframex/com.gameframex.unity.cysharp.unitask.git",
+      "dependencies": {},
+      "direct": true,
+      "tag": "2.6.2",
+      "commit": "955a851a8fe6ed8c6550d012bbb4fec34467c2ed"
+    },
+    "com.gameframex.unity.json.simplejson": {
+      "version": "1.1.2",
+      "git": "https://github.com/gameframex/com.gameframex.unity.json.simplejson.git",
+      "dependencies": {},
+      "direct": true,
+      "tag": "1.1.2",
+      "commit": "e876c9c2cc1801e4e3be98990d847a8eb3509059"
+    },
+    "com.gameframex.unity.ui": {
+      "version": "2.11.2",
+      "git": "https://github.com/gameframex/com.gameframex.unity.ui.git",
+      "dependencies": {
+        "com.gameframex.unity": "2.5.1",
+        "com.gameframex.unity.asset": "3.1.1",
+        "com.gameframex.unity.event": "1.3.0",
+        "com.gameframex.unity.localization": "2.3.1",
+        "com.gameframex.unity.tuyoogame.yooasset": "2.9.4",
+        "com.gameframex.unity.cysharp.unitask": "2.6.2"
+      },
+      "direct": true,
+      "tag": "2.11.2",
+      "commit": "604dbee609b14c0ec7cbc73c7e657b91466d74e5"
+    },
+    "com.gameframex.unity.asset": {
+      "version": "3.2.0",
+      "git": "https://github.com/gameframex/com.gameframex.unity.asset.git",
+      "dependencies": {
+        "com.gameframex.unity": "1.1.1",
+        "com.gameframex.unity.event": "1.1.0"
+      },
+      "direct": true,
+      "tag": "3.2.0",
+      "commit": "e8c2c57d8e19f6b827cd25a1ee8d1a1283314bb6"
+    },
+    "com.gameframex.unity.event": {
+      "version": "1.4.0",
+      "git": "https://github.com/gameframex/com.gameframex.unity.event.git",
+      "dependencies": {
+        "com.gameframex.unity": "2.5.1"
+      },
+      "direct": true,
+      "tag": "1.4.0",
+      "commit": "a5f8cf0edf8e3925da36478adc798c737af4c682"
+    },
+    "com.gameframex.unity.localization": {
+      "version": "2.3.2",
+      "git": "https://github.com/gameframex/com.gameframex.unity.localization.git",
+      "dependencies": {
+        "com.gameframex.unity": "2.5.1",
+        "com.gameframex.unity.asset": "3.1.1",
+        "com.gameframex.unity.event": "1.3.0",
+        "com.gameframex.unity.setting": "1.6.0"
+      },
+      "direct": true,
+      "tag": "2.3.2",
+      "commit": "4a7899c7d25c1ec6ca94c559b8e928f7606433b0"
+    },
+    "com.gameframex.unity.setting": {
+      "version": "1.6.1",
+      "git": "https://github.com/gameframex/com.gameframex.unity.setting.git",
+      "dependencies": {
+        "com.gameframex.unity": "2.5.1"
+      },
+      "direct": true,
+      "tag": "1.6.1",
+      "commit": "c37fb0c77743b008dee2c4bba8a8594f7d1b84bf"
+    },
+    "com.gameframex.unity.tuyoogame.yooasset": {
+      "version": "2.9.4",
+      "git": "https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.git",
+      "dependencies": {
+        "com.unity.scriptablebuildpipeline": "2.1.0",
+        "com.unity.modules.assetbundle": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
+      },
+      "direct": true,
+      "tag": "2.9.4",
+      "commit": "6e122aa91550451d5b95d303094d41ea2ad59dd9"
+    },
+    "com.unity.scriptablebuildpipeline": {
+      "version": "2.1.0",
+      "git": null,
+      "dependencies": {},
+      "direct": false
+    },
+    "com.unity.modules.unitywebrequestassetbundle": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {
+        "com.unity.modules.assetbundle": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
+      "direct": false
+    },
+    "com.gameframex.unity.ui.ugui": {
+      "version": "2.6.3",
+      "git": "https://github.com/gameframex/com.gameframex.unity.ui.ugui.git",
+      "dependencies": {
+        "com.gameframex.unity": "2.5.1",
+        "com.gameframex.unity.ui": "2.11.0",
+        "com.gameframex.unity.asset": "3.1.1",
+        "com.gameframex.unity.event": "1.3.0",
+        "com.gameframex.unity.tuyoogame.yooasset": "2.9.4",
+        "com.gameframex.unity.cysharp.unitask": "2.6.2"
+      },
+      "direct": true,
+      "tag": "2.6.3",
+      "commit": "379c219b752185232bfdeb03d1834511b0b59f21"
+    },
+    "com.gameframex.unity.fsm": {
+      "version": "1.2.0",
+      "git": "https://github.com/gameframex/com.gameframex.unity.fsm.git",
+      "dependencies": {},
+      "direct": true,
+      "tag": "1.2.0",
+      "commit": "65a093c82a2a8ab108bd555b8d9bbb516f587daf"
+    },
+    "com.unity.ugui": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0"
+      },
+      "direct": true
+    },
+    "com.unity.modules.ui": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": false
+    },
+    "com.unity.textmeshpro": {
+      "version": "3.0.9",
+      "git": null,
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "direct": true
+    },
+    "com.unity.modules.video": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {
+        "com.unity.modules.audio": "1.0.0",
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
+      "direct": true
+    },
+    "com.unity.modules.imageconversion": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": true
+    },
+    "com.unity.modules.uielements": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "direct": true
+    },
+    "com.unity.modules.ai": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": true
+    },
+    "com.unity.modules.physics": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": true
+    },
+    "com.unity.modules.physics2d": {
+      "version": "1.0.0",
+      "git": null,
+      "dependencies": {},
+      "direct": true
+    }
+  },
+  "external": [
+    {
+      "name": "NodeCanvas / ParadoxNotion CanvasCore",
+      "testedFrameworkVersion": "3.30",
+      "requiredAssembly": "ParadoxNotion",
+      "git": null,
+      "source": "https://nodecanvas.paradoxnotion.com/",
+      "note": "The installed source has no public Git/UPM package identity; install NodeCanvas separately. Third-party source is not redistributed."
+    }
+  ]
+}

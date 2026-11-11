@@ -1,0 +1,9 @@
+{
+  "name": "Game.VideoFlow.Contracts",
+  "rootNamespace": "Game.VideoFlow",
+  "references": [
+    "GameFrameX.NodeComposer.Runtime",
+    "GameFrameX.NodeComposer.Video.Runtime"
+  ],
+  "noEngineReferences": true
+}
