@@ -25,12 +25,12 @@
 
 **Interfaces:** Produce exactly IMovieManager and immutable MovieChapterInfo as defined in the spec. Retain the existing `IVideoFlowDriver`, player/UI/behavior contracts and public compatibility constructor. New module is the only owner of execution state and the module-wide activation sequence.
 
-- [ ] First write a runnable NUnit regression which uses reflection until the new type exists, configures real loader/factory with recording playback, loads catalog A/B, plays A, loads B during playback, and asserts A remains active while both chapter IDs are cached. If IMovieManager/MovieManager is absent, assert an explicit missing-feature failure rather than causing compilation failure. Signal RED_READY and wait for controller's confirmed NUnit red before production edits.
-- [ ] Implement the contract and migrate the original Driver/States implementation into MovieManager. Preserve old Load/Start/Tick/Dispose through a legacy driver adapter using internal module methods; do not route a standalone adapter through GF global registration.
-- [ ] Implement strict catalog loading and immutable metadata. Cache compiled graphs independently from the selected/executing graph. Validate loader results, behavior support and executable chapter entry before mutation. Target failures must retain current run/cache.
-- [ ] Implement chapter playback, same-chapter replay, Stop and the three unload scopes according to the spec. Retain monotonic activation IDs and identify chapter in events. Preserve deferred event cleanup and existing queue stop priority. No data or session from one chapter may leak into another.
-- [ ] Add meaningful typed tests with literal fixtures and independent expectations for: A running while B preloads; bad catalog/graph/entry or uncached Play preserves A; cache replacement/duplicate identity rejection; A→B cleanup ordering; same-chapter replay resets values and sessions; unloading inactive A leaves B running; unloading current B closes video/UI and retains A; all-unload retains catalog; catalog-unload empties all; observer-triggered unload; stale UI callback rejection; GF Update/Shutdown advancing/releasing once. Test helpers live in test files and do not add production-only test APIs.
-- [ ] Report changed files, public behavior checks, exact red observation request and any unresolved concerns. Controller runs targeted tests followed by task review.
+- [x] First write a runnable NUnit regression which uses reflection until the new type exists, configures real loader/factory with recording playback, loads catalog A/B, plays A, loads B during playback, and asserts A remains active while both chapter IDs are cached. If IMovieManager/MovieManager is absent, assert an explicit missing-feature failure rather than causing compilation failure. Signal RED_READY and wait for controller's confirmed NUnit red before production edits.
+- [x] Implement the contract and migrate the original Driver/States implementation into MovieManager. Preserve old Load/Start/Tick/Dispose through a legacy driver adapter using internal module methods; do not route a standalone adapter through GF global registration.
+- [x] Implement strict catalog loading and immutable metadata. Cache compiled graphs independently from the selected/executing graph. Validate loader results, behavior support and executable chapter entry before mutation. Target failures must retain current run/cache.
+- [x] Implement chapter playback, same-chapter replay, Stop and the three unload scopes according to the spec. Retain monotonic activation IDs and identify chapter in events. Preserve deferred event cleanup and existing queue stop priority. No data or session from one chapter may leak into another.
+- [x] Add meaningful typed tests with literal fixtures and independent expectations for: A running while B preloads; bad catalog/graph/entry or uncached Play preserves A; cache replacement/duplicate identity rejection; A→B cleanup ordering; same-chapter replay resets values and sessions; unloading inactive A leaves B running; unloading current B closes video/UI and retains A; all-unload retains catalog; catalog-unload empties all; observer-triggered unload; stale UI callback rejection; GF Update/Shutdown advancing/releasing once. Test helpers live in test files and do not add production-only test APIs.
+- [x] Report changed files, public behavior checks, exact red observation request and any unresolved concerns. Controller runs targeted tests followed by task review.
 
 **Representative expected workflow:**
 
@@ -54,16 +54,25 @@ Assert.That(movie.LoadedChapterIds, Is.EqualTo(new[] { "b" }));
 
 **Interfaces:** Consume Task 1 IMovieManager unchanged. Component forwards every operation/query/event without exposing a Driver or concrete Manager. Register and retrieve the manager using real GF lifecycle. Serialized scene inputs are catalog, chapter graph bindings, UI service, video target, Clip bindings and Play On Start.
 
-- [ ] Add failing integration tests for actual GF registration and component-owned dependency configuration, then configure serialized bindings and call Play() to start the catalog default chapter. Root test runner controls execution.
-- [ ] Implement standard GF Awake registration, service setup at a lifecycle-safe point and complete API forwarding. Parameterless Play() validates configured catalog/bindings before replacing a current run; partial/bad configuration must report a clear failure. Allow explicit LoadChapter for late resource loading.
-- [ ] Ensure module Update is the sole update source, and disabling/destroying the component closes its video/UI safely. Test component disable, destruction, GF shutdown order, reentrant Play during stop and duplicate component ownership. Preserve externally provided RenderTexture.
-- [ ] Run complete five-assembly Unity regression, inspect actual test XML/log, then independent task/final review. Fix material findings and add only tests that protect them.
+- [x] Add failing integration tests for actual GF registration and component-owned dependency configuration, then configure serialized bindings and call Play() to start the catalog default chapter. Root test runner controls execution.
+- [x] Implement standard GF Awake registration, service setup at a lifecycle-safe point and complete API forwarding. Parameterless Play() validates configured catalog/bindings before replacing a current run; partial/bad configuration must report a clear failure. Allow explicit LoadChapter for late resource loading.
+- [x] Ensure module Update is the sole update source, and disabling/destroying the component closes its video/UI safely. Test component disable, destruction, GF shutdown order, reentrant Play during stop and duplicate component ownership. Preserve externally provided RenderTexture.
+- [x] Run complete five-assembly Unity regression, inspect actual test XML/log, then independent task/final review. Fix material findings and add only tests that protect them.
 
 ## Task 3: documentation, release and target-project integration
 
 **Files:** README.md, Documentation~/VideoFlow.md, ChapterCatalog.md, Validation.md, dependency/validation records, installation examples, CHANGELOG.md and package.json; host project manifest/lock only for package revision update.
 
-- [ ] Document the new business entry, exact unload scopes, catalog loading versus graph loading, resource binding, event chapter identity, GF update ownership and migration from old standalone entry. Existing APIs are compatibility paths, not an alternate implementation.
-- [ ] Record precise local test evidence and package structural validation; preserve prior historical results. Version the reviewed compatible addition as 1.2.0.
-- [ ] Integrate verified feature into /Users/user/MoveComponent, publish private Git v1.2.0 without changing old tags, verify remote Git UPM in the isolated project, and update current GameFrameX.Unity to that Git tag.
-- [ ] Validate actual target package version, all assemblies/resources, old graph GUID and new component/module types; remove temporary validation helper. Record post-publication evidence in a docs-only follow-up and report entry points, test totals and limitations.
+- [x] Document the new business entry, exact unload scopes, catalog loading versus graph loading, resource binding, event chapter identity, GF update ownership and migration from old standalone entry. Existing APIs are compatibility paths, not an alternate implementation.
+- [x] Record precise local test evidence and package structural validation; preserve prior historical results. Version the reviewed compatible addition as 1.2.0.
+- [x] Integrate verified feature into /Users/user/MoveComponent, publish private Git v1.2.0 without changing old tags, verify remote Git UPM in the isolated project, and update current GameFrameX.Unity to that Git tag.
+- [x] Validate actual target package version, all assemblies/resources, old graph GUID and new component/module types; remove temporary validation helper. Record post-publication evidence in a docs-only follow-up and report entry points, test totals and limitations.
+
+## Durable outcome
+
+Chronology and release evidence (2026-11-11):
+
+1. Migrated the existing execution state machine into `MovieManager` and kept `VideoFlowDriver`, `Host` and FSM compatibility adapters. This preserves scenes and scripts while retaining one implementation; the tradeoff is maintaining a thin legacy adapter.
+2. Avoided adding breaking members to `IVideoFlowGraph`. The built-in loader captures executable entry metadata from the actual registry; custom loaders remain responsible for enforcing their own strict control-entry contract. A faulty third-party loader could accept an illegal entry.
+3. The final branch review of `b7609d3..27c359a` found a pending-target unload issue. The final RED run reproduced both observer cases (`2/2` failing); fix `a31e7c8` passed final local XML at `165/165`, and scoped re-review `27c359a..a31e7c8` was clean.
+4. The published private `v1.2.0` tag resolves to code commit `a31e7c8af7b85a28bf7fb7e454284a652c3904d6`. Isolated local-file and remote-Git runs each passed `165/165` across five assemblies. GameFrameX.Unity imported the Git package and passed compile/resource/asset/type integration checks; it did not run the full test suite. Temporary validation helpers were removed. Final evidence and environment/platform limits are in `Documentation~/Validation.md`; this documentation follow-up does not move or rewrite the published tag.

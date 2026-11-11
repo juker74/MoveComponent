@@ -6,7 +6,7 @@
 - Forward module operations, immutable snapshots and chapter-aware events through the scene component; bind catalog/graph TextAssets, UI services, video output and clips explicitly.
 - Define Stop and unload scopes, fresh values on chapter replay, retained values in graph loops, and stale callback rejection across chapter switches.
 - Keep VideoFlowDriver as a thin compatibility adapter with existing Host/FSM entry points; the GF module is updated and shut down only by the framework.
-- Document v1.2.0 installation and resource boundaries. Local Unity validation passes all 165 tests across five assemblies; package checks include assembly references. Remote Git and target-project evidence is recorded in Documentation~/Validation.md after verification.
+- Document v1.2.0 installation and resource boundaries. Local and private remote Git Unity validation each pass all 165 tests across five assemblies; package checks include assembly references. GameFrameX.Unity Git import and MovieComponent/MovieManager integration pass; evidence is recorded in Documentation~/Validation.md.
 
 ## 1.1.0 — 2026-11-11
 

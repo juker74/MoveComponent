@@ -2,7 +2,7 @@
 
 ## 1.2.0 — GF Movie 模块与多章节缓存
 
-验证日期：2026-11-11。Unity 2022.3.62f3，隔离项目通过本地 `file:` 包安装，启用图形环境。全部五个测试程序集共 **165 项：165 通过、0 失败、0 跳过**；其中一个 UnityTest 进入真实 Play 模式验证晚创建 BaseComponent 的生命周期。NUnit 结果：`/tmp/MoveComponent-movie-final-local.xml`。
+验证日期：2026-11-11。Unity 2022.3.62f3，隔离项目分别通过本地 `file:` 和私有远端 Git `v1.2.0` 包安装，均启用图形环境。两次运行的五个测试程序集均为 **165 项：165 通过、0 失败、0 跳过**；其中一个 UnityTest 进入真实 Play 模式验证晚创建 BaseComponent 的生命周期。本地 NUnit 结果：`/tmp/MoveComponent-movie-final-local.xml`；远端 Git NUnit 结果：`/tmp/MoveComponent-movie-git.xml`。远端 Git 包解析到代码提交 `a31e7c8af7b85a28bf7fb7e454284a652c3904d6`。
 
 | 程序集 | 通过 | 失败 |
 | --- | --- | --- |
@@ -18,7 +18,9 @@
 
 Unity 启动日志包含授权/令牌、CDN、usbmuxd 及偶发 Android 目标扫描进程消息；它们发生于测试环境，不能把日志描述为完全无噪声。原有 NodeCanvas 临时图 Undo 警告沿用 1.1.0 的记录。此次没有包内 C# 编译错误，NUnit 没有失败或跳过。此结果不代表已验证所有平台解码、IL2CPP 或具体游戏资源加载。
 
-私有远端 Git 标签和目标 GameFrameX.Unity 项目集成验证待完成；后续仅在观察到实际结果后补充证据。以下历史记录保持原版本结论。
+目标 `/Users/user/Demo/GameFrameX.Unity` 项目通过私有 Git 安装 `v1.2.0`，报告状态为 Passed，版本和解析哈希分别为 `1.2.0` 与 `a31e7c8af7b85a28bf7fb7e454284a652c3904d6`。项目确认 15 个程序集编译，7 个 Editor Resources 加载，原有 ComposerGraph 脚本 GUID `22a41af39b6684b1087cc91c914c50b7` 保持解析，并确认 `MovieComponent`、`MovieManager`、`IMovieManager` 类型、运行时程序集契约及 GF 生命周期。临时验证 helper 及其 `.meta` 已清理。该目标项目验证覆盖导入、编译、资源、资产和编辑器/类型集成；**没有**在目标项目运行完整测试套件，165 项结果来自隔离项目。报告：`/tmp/MoveComponent-movie-project-report.json`。
+
+已发布的远端 `v1.2.0` 注释标签保持固定指向上述代码提交；本段是发布后的文档证据补录，不重写标签。以下历史记录保持原版本结论。
 
 ## 1.1.0 — 章节目录编辑器
 

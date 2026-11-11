@@ -282,12 +282,12 @@
   "external": [],
   "packageVersion": "1.2.0",
   "targetUnity": "2022.3.62f3",
-  "validationStatus": "1.2.0 local file UPM: 165/165 tests passed across five assemblies, including real GF lifecycle. Structure checks: 512 C# sources, 15 assemblies, 771 unique GUIDs; asmdef and asmref targets verified. No new dependency versions. Private remote Git and GameFrameX.Unity target integration pending. See Validation.md.",
+  "validationStatus": "1.2.0 local file and private remote Git UPM: both 165/165 tests passed across five assemblies, including real GF lifecycle. Structure checks: 512 C# sources, 15 assemblies, 771 unique GUIDs; asmdef and asmref targets verified. GameFrameX.Unity imported Git v1.2.0 and passed MovieComponent/MovieManager integration checks. No new dependency versions. See Validation.md.",
   "repository": {
     "url": "https://github.com/juker74/MoveComponent.git",
     "visibility": "private",
     "tag": "v1.2.0",
-    "commit": null,
+    "commit": "a31e7c8af7b85a28bf7fb7e454284a652c3904d6",
     "authentication": "Use existing Git credentials for an authorized account; never embed a token in the URL."
   },
   "bundled": [
