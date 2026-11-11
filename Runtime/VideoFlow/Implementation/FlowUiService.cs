@@ -2,6 +2,7 @@ using System;
 using Game.Framework.UI;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 namespace Game.VideoFlow
@@ -12,13 +13,19 @@ namespace Game.VideoFlow
         readonly Dictionary<long, Session> sessions = new Dictionary<long, Session>();
         public event Action<FlowUiRequest> Opened;
         public event Action<long> Closed;
+        public event Action<FlowEvent> EventRaised;
         public IFlowUiSession Open(FlowUiRequest request)
         {
             if (request == null || !MovieUIType.IsSelectable(request.UiType)) throw new ArgumentException("UI 请求无效。");
             var session = new Session(this, request);
             sessions.Add(request.ActivationId, session);
             try { Opened?.Invoke(request); return session; }
-            catch { session.Dispose(); throw; }
+            catch
+            {
+                try { session.Dispose(); }
+                catch (Exception e) { ReportCleanup(request.ActivationId, e); }
+                throw;
+            }
         }
         /// <summary>异步打开时请使用此重载：旧请求即使 ActivationId 被复用，也无法绑定新会话。</summary>
         public bool Bind(FlowUiRequest request, MovieUIForm form)
@@ -72,7 +79,12 @@ namespace Game.VideoFlow
         void OnDisable()
         {
             foreach (var session in sessions.Values.ToArray())
-                try { session.Dispose(); } catch (Exception e) { Debug.LogException(e, this); }
+                try { session.Dispose(); } catch (Exception e) { ReportCleanup(session.Request.ActivationId, e); }
+        }
+        void ReportCleanup(long activationId, Exception exception)
+        {
+            FlowEventDispatcher.Raise(EventRaised, new FlowEvent(FlowEventKind.Diagnostic, null,
+                activationId: activationId, errorCode: "UiCleanup", errorMessage: exception.Message, exception: exception));
         }
         sealed class Session : IFlowUiSession
         {
@@ -88,9 +100,21 @@ namespace Game.VideoFlow
             {
                 var service=Owner; if (service==null) return; Owner=null;
                 if (Status==FlowUiStatus.Open) Status=FlowUiStatus.Cancelled;
-                Binding?.Dispose(); Binding=null;
-                service.sessions.Remove(Request.ActivationId);
-                service.Closed?.Invoke(Request.ActivationId);
+                Exception bindingFailure = null;
+                try { Binding?.Dispose(); }
+                catch (Exception e) { bindingFailure = e; }
+                finally
+                {
+                    Binding=null;
+                    service.sessions.Remove(Request.ActivationId);
+                }
+                try { service.Closed?.Invoke(Request.ActivationId); }
+                catch (Exception e)
+                {
+                    if (bindingFailure != null) throw new AggregateException(bindingFailure, e);
+                    throw;
+                }
+                if (bindingFailure != null) ExceptionDispatchInfo.Capture(bindingFailure).Throw();
             }
         }
     }

@@ -33,6 +33,69 @@ namespace Game.VideoFlow.Tests
         }
 
         [Test]
+        public void PlayOnStartFailureRaisesDiagnosticWithCurrentContextWithoutLogging()
+        {
+            using (var scene = new Scene())
+            {
+                AssertSuccess(scene.Component.LoadCatalog(Catalog));
+                AssertSuccess(scene.Component.LoadChapter("a", UiGraph));
+                AssertSuccess(scene.Component.PlayChapter("a"));
+                Set(scene.Component, "catalogJson", null);
+                Set(scene.Component, "playOnStart", true);
+                var diagnostics = new List<FlowEvent>();
+                var logs = new List<string>();
+                scene.Component.EventRaised += e => { if (e.Kind == FlowEventKind.Diagnostic) diagnostics.Add(e); };
+                Application.LogCallback logged = (message, stack, kind) => logs.Add(message);
+                bool ignored = LogAssert.ignoreFailingMessages;
+                LogAssert.ignoreFailingMessages = true;
+                Application.logMessageReceived += logged;
+                try
+                {
+                    Invoke(scene.Component, "Start");
+                    Assert.That(diagnostics.Count, Is.EqualTo(1));
+                    Assert.That(diagnostics[0].ErrorCode, Is.EqualTo("Catalog"));
+                    Assert.That(diagnostics[0].ErrorMessage, Is.Not.Empty);
+                    Assert.That(diagnostics[0].Phase, Is.EqualTo(FlowPhase.Interacting));
+                    Assert.That(diagnostics[0].ChapterId, Is.EqualTo("a"));
+                    Assert.That(diagnostics[0].NodeId, Is.EqualTo("v"));
+                    Assert.That(logs, Is.Empty);
+                }
+                finally
+                {
+                    Application.logMessageReceived -= logged;
+                    LogAssert.ignoreFailingMessages = ignored;
+                }
+            }
+        }
+
+        [Test]
+        public void ThrowingComponentSubscriberIsObservableAndHealthyListenersStillReceiveLifecycle()
+        {
+            using (var scene = new Scene())
+            {
+                AssertSuccess(scene.Component.LoadCatalog(Catalog));
+                AssertSuccess(scene.Component.LoadChapter("a", UiGraph));
+                var failure = new InvalidOperationException("component observer failed");
+                var events = new List<FlowEvent>();
+                scene.Component.EventRaised += e => { if (e.Kind == FlowEventKind.NodeEntered) throw failure; };
+                scene.Component.EventRaised += events.Add;
+                AssertSuccess(scene.Component.PlayChapter("a"));
+                Assert.That(events.Count(e => e.Kind == FlowEventKind.NodeEntered), Is.EqualTo(1));
+                var diagnostics = events.Where(e => e.Kind == FlowEventKind.Diagnostic).ToArray();
+                Assert.That(diagnostics.Length, Is.EqualTo(1));
+                Assert.That(diagnostics[0].ErrorCode, Is.EqualTo("ObserverException"));
+                Assert.That(diagnostics[0].ErrorMessage, Does.Contain(failure.Message));
+                Assert.That(diagnostics[0].Exception, Is.SameAs(failure));
+                Assert.That(diagnostics[0].RelatedEventKind, Is.EqualTo(FlowEventKind.NodeEntered));
+                Assert.That(diagnostics[0].GraphId, Is.EqualTo("ui-graph"));
+                Assert.That(diagnostics[0].ChapterId, Is.EqualTo("a"));
+                Assert.That(diagnostics[0].NodeId, Is.EqualTo("v"));
+                Assert.That(diagnostics[0].ActivationId, Is.EqualTo(scene.Component.ActiveNodes.Single().ActivationId));
+                Assert.That(scene.Component.Status, Is.EqualTo(FlowStatus.Running));
+            }
+        }
+
+        [Test]
         public void RegisteredComponentConfiguredPlayStartsCatalogDefaultAndCachesBothGraphs()
         {
             using (var scene = new Scene())

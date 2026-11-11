@@ -84,6 +84,33 @@ movie.EventRaised += evt =>
 
 `CurrentVideo` 可查看 NodeId、ActivationId、UiActivationIds 和 PauseCount；`ActiveNodes` 的 SourceVideoActivationId 表示交互归属。`FlowEventKind.PhaseChanged` 通知主阶段变化，UI 只发布对应节点事件。`FlowEvent.ChapterId` 标明事件所属章节，GraphId/NodeId 继续标明图与节点；旧单图兼容入口没有目录，ChapterId 为 null。
 
+## 故障诊断与宿主日志
+
+Movie 运行时代码不固定调用 GFX Log、Unity Debug 或其他日志后端。保留现有 GFX 模块结构和依赖；不订阅诊断也可以正常运行。业务按需订阅 `IMovieManager.EventRaised` 或 `MovieComponent.EventRaised`（二选一，组件转发模块事件），兼容入口订阅 Driver/Host 的同名事件。
+
+- `FlowFaulted` 表示执行故障，清理节点后发布。事件在清理前保存 GraphId、ChapterId、NodeId、ActivationId、输入/输出端口和错误信息；`Exception` 为原始异常，主动 `context.Fail` 上报的业务错误可以没有异常。
+- `Diagnostic` 表示监听异常、附加清理异常或自动播放配置失败。`ObserverException` 的 `RelatedEventKind` 标明原始事件类型，并保留该事件的身份和原始异常。监听异常本身不改变流程状态，也不阻止其余监听者收到原始通知。诊断监听者抛出的异常不再生成诊断，避免递归。
+- 执行异常与清理异常同时发生时，`FlowFaulted` 保留执行异常；清理异常单独以 `Cleanup` 诊断上报。自动播放失败沿用 `GraphResult.Issues` 的错误码与消息，其上下文表示当前组件状态，未知的图 ID 为 null。主动调用 API 时仍应检查返回的 `GraphResult`。
+- `FlowUiService.EventRaised` 单独通知禁用清理或打开失败后的清理异常，代码为 `UiCleanup`。UI 桥只掌握请求的 ActivationId，未知图/章节/节点字段为 null；可同时订阅此事件。`Opened`/`Closed` 继续是业务操作回调，失败仍会向调用者抛出；同时发生的绑定释放与关闭回调异常由 `AggregateException` 保留。
+
+以下代码放在宿主接入层，示例选用 Unity Debug；也可以把输出替换为 GFX `Log.Error` 或项目已有日志函数，模块无需修改：
+
+```csharp
+void WriteMovieDiagnostic(Game.VideoFlow.FlowEvent evt)
+{
+    if (evt.Kind != Game.VideoFlow.FlowEventKind.FlowFaulted &&
+        evt.Kind != Game.VideoFlow.FlowEventKind.Diagnostic) return;
+    var context = $"chapter={evt.ChapterId}, graph={evt.GraphId}, node={evt.NodeId}, activation={evt.ActivationId}";
+    UnityEngine.Debug.LogError($"[Movie/{evt.ErrorCode}] {context}: {evt.ErrorMessage}\n{evt.Exception}");
+}
+
+// 初始化接入时订阅；接入对象销毁时退订相同方法。
+movie.EventRaised += WriteMovieDiagnostic;
+uiService.EventRaised += WriteMovieDiagnostic;
+// movie.EventRaised -= WriteMovieDiagnostic;
+// uiService.EventRaised -= WriteMovieDiagnostic;
+```
+
 ## 状态与切换时序
 
 执行状态使用 Empty、Ready、Running、Completed、Stopped、Faulted；Status 描述执行，成功加载目录和章图后仍可能为 Empty，目录/缓存是否存在由 Chapters/LoadedChapterIds 查询。激活状态为 Entering → Active → Exiting → Exited。ActivationId 在模块生命周期内持续递增，Stop、卸载、换目录和同章重播均不重置，旧回调不会因 ID 重用命中新执行。

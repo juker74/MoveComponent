@@ -1,6 +1,6 @@
 {
   "name": "com.gameframex.unity.movecomponent",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "displayName": "MoveComponent",
   "description": "Typed multi-port node composer, chapter catalog editor and JSON bundles, video/UI nodes and GF movie module with multiple cached chapters and one executing graph. Bundles complete ParadoxNotion NodeCanvas / CanvasCore sources and editor resources.",
   "unity": "2022.3",

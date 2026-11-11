@@ -59,7 +59,16 @@ namespace GameFrameX.Movie.Runtime
         {
             if (!playOnStart) return;
             var result = Play();
-            if (!result.Success) Debug.LogError("Movie: " + result.Message, this);
+            if (result.Success) return;
+            var nodeId = CurrentNodeId;
+            var phase = Phase;
+            var chapterId = CurrentChapterId;
+            long activationId = 0;
+            foreach (var active in ActiveNodes)
+                if (active.NodeId == nodeId) { activationId = active.ActivationId; break; }
+            foreach (var issue in result.Issues)
+                OnFlowEvent(new FlowEvent(FlowEventKind.Diagnostic, null, nodeId ?? issue.NodeId, activationId,
+                    errorCode: issue.Code, errorMessage: issue.Message, phase: phase, chapterId: chapterId));
         }
 
         public void SetDependencies(IVideoFlowLoader loader, IFlowNodeBehaviorFactory behaviorFactory)
@@ -171,10 +180,7 @@ namespace GameFrameX.Movie.Runtime
 
         void OnFlowEvent(FlowEvent evt)
         {
-            var handlers = EventRaised;
-            if (handlers == null) return;
-            foreach (Action<FlowEvent> handler in handlers.GetInvocationList())
-                try { handler(evt); } catch { }
+            FlowEventDispatcher.Raise(EventRaised, evt);
         }
 
         // 清理始终交给缓存模块；重入时由模块排队，GF 关闭后不重新获取模块。

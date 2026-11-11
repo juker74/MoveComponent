@@ -240,7 +240,7 @@ namespace GameFrameX.Movie.Runtime
                 if (node.TypeId == VideoNodeSchema.TypeId) PrepareVideo(() => Enter(node, null, null));
                 else ChangeState(new InteractionState(this, () => Enter(node, null, null)));
             }
-            catch (Exception e) { Fault("Behavior", e.Message); }
+            catch (Exception e) { Fault("Behavior", e.Message, exception: e); }
         }
 
         protected override void Update(float elapseSeconds, float realElapseSeconds) { LegacyTick(elapseSeconds, realElapseSeconds); }
@@ -291,7 +291,7 @@ namespace GameFrameX.Movie.Runtime
             Status = FlowStatus.Stopped;
             requests.Clear();
             var error = Clear();
-            if (error != null) { Fault("Cleanup", error.Message); return false; }
+            if (error != null) { Fault("Cleanup", error.Message, exception: error); return false; }
             ChangeState(new InactiveState(this, FlowPhase.Stopped));
             Notify(FlowEventKind.FlowStopped);
             return true;
@@ -333,37 +333,53 @@ namespace GameFrameX.Movie.Runtime
         {
             busy = true;
             try { action(); }
-            catch (Exception e) { Fault("Behavior", e.Message); }
+            catch (Exception e) { Fault("Behavior", e.Message, exception: e); }
             finally { try { DrainCleanup(); } finally { busy = false; } }
         }
 
         void Notify(FlowEventKind kind, Activation a = null, string output = null, float delta = 0, float real = 0,
-            string code = null, string message = null)
+            string code = null, string message = null, Exception exception = null)
         {
             var handlers = EventRaised;
             if (handlers == null) return;
             var evt = new FlowEvent(kind, graph?.Id, a?.Node.Id, a?.ActivationId ?? 0, a?.InputPortId,
-                output, delta, real, code, message, Phase, CurrentChapterId);
-            // 观察者异常不应中断资源释放或改变流程状态。
-            foreach (Action<FlowEvent> handler in handlers.GetInvocationList())
-                try { handler(evt); } catch { }
+                output, delta, real, code, message, Phase, CurrentChapterId, exception);
+            FlowEventDispatcher.Raise(handlers, evt);
         }
 
-        void Fault(string code, string message)
+        void Fault(string code, string message, Activation a = null, string output = null, Exception exception = null)
         {
+            var failure = exception as NodeExecutionException;
+            if (failure != null) { a = failure.Activation; output = failure.Output; exception = failure.InnerException; }
+            // 在 Exit/Dispose 和观察者清理前固定故障身份；失败节点可能尚未加入或已经移出 active。
+            var evt = new FlowEvent(FlowEventKind.FlowFaulted, graph?.Id, a?.Node.Id, a?.ActivationId ?? 0,
+                a?.InputPortId, output, errorCode: code, errorMessage: message, phase: FlowPhase.Faulted,
+                chapterId: CurrentChapterId, exception: exception);
             Status = FlowStatus.Faulted;
             requests.Clear();
-            Clear();
+            Clear(true);
             ChangeState(new InactiveState(this, FlowPhase.Faulted));
-            Notify(FlowEventKind.FlowFaulted, code: code, message: message);
+            FlowEventDispatcher.Raise(EventRaised, evt);
         }
 
-        Exception Clear()
+        void CleanupDiagnostic(Exception error, Activation a, string output = null)
+        {
+            var failure = error as NodeExecutionException;
+            if (failure != null) { a = failure.Activation; output = failure.Output; error = failure.InnerException; }
+            Notify(FlowEventKind.Diagnostic, a, output, code: "Cleanup", message: error.Message, exception: error);
+        }
+
+        Exception Clear(bool reportFailures = false)
         {
             if (currentVideo != null) currentVideo.Closing = true;
             Exception first = null;
             foreach (var a in active.ToArray().Reverse())
-                try { Exit(a, null); } catch (Exception e) { if (first == null) first = e; }
+                try { Exit(a, null); }
+                catch (Exception e)
+                {
+                    if (reportFailures || first != null) CleanupDiagnostic(e, a);
+                    if (first == null) first = e;
+                }
             currentVideo = null;
             return first;
         }
@@ -372,21 +388,25 @@ namespace GameFrameX.Movie.Runtime
         {
             if (!CanRun) return;
             var a = new Activation(this, node, input, ++sequence, source);
-            a.SerialRoute=serialRoute;
-            var valueDefinition=ValueGraph?.GetValueNode(node.Id);
-            a.Behavior = (valueDefinition!=null || node.TypeId=="common.control" ? new ValueBehavior(this,valueDefinition) : factory.Create(node)) ?? throw new InvalidOperationException("行为工厂返回 null。");
-            if (node.TypeId == VideoNodeSchema.TypeId)
+            try
             {
-                if (currentVideo != null) throw new InvalidOperationException("进入新视频前必须退出旧视频上下文。");
-                currentVideo = new VideoExecutionContext(a);
-                a.Context = currentVideo;
+                a.SerialRoute=serialRoute;
+                var valueDefinition=ValueGraph?.GetValueNode(node.Id);
+                a.Behavior = (valueDefinition!=null || node.TypeId=="common.control" ? new ValueBehavior(this,valueDefinition) : factory.Create(node)) ?? throw new InvalidOperationException("行为工厂返回 null。");
+                if (node.TypeId == VideoNodeSchema.TypeId)
+                {
+                    if (currentVideo != null) throw new InvalidOperationException("进入新视频前必须退出旧视频上下文。");
+                    currentVideo = new VideoExecutionContext(a);
+                    a.Context = currentVideo;
+                }
+                else if (source != null) source.Interactions.Add(a);
+                active.Add(a);
+                Notify(FlowEventKind.NodeEntered, a);
+                if (!CanRun) return;
+                a.Behavior.Enter(a);
+                a.State = FlowActivationState.Active;
             }
-            else if (source != null) source.Interactions.Add(a);
-            active.Add(a);
-            Notify(FlowEventKind.NodeEntered, a);
-            if (!CanRun) return;
-            a.Behavior.Enter(a);
-            a.State = FlowActivationState.Active;
+            catch (Exception e) { throw NodeExecutionException.Wrap(a, null, e); }
         }
 
         void Exit(Activation a, string output)
@@ -402,12 +422,20 @@ namespace GameFrameX.Movie.Runtime
                     if (currentVideo == a.Context) currentVideo = null;
                 }
             }
+            Exception error = null;
             try { a.Behavior.Exit(); }
+            catch (Exception e) { error = e; }
             finally
             {
                 try { a.Behavior.Dispose(); }
+                catch (Exception e)
+                {
+                    if (error == null) error = e;
+                    else CleanupDiagnostic(e, a, output);
+                }
                 finally { a.State = FlowActivationState.Exited; Notify(FlowEventKind.NodeExited, a, output); }
             }
+            if (error != null) throw NodeExecutionException.Wrap(a, output, error);
         }
 
         void CloseVideo(VideoExecutionContext context, Activation completing, string output)
@@ -422,7 +450,14 @@ namespace GameFrameX.Movie.Runtime
         {
             var a = request.Activation;
             if (!active.Contains(a)) return;
-            if (request.ErrorCode != null) { Fault(request.ErrorCode, request.ErrorMessage); return; }
+            try { ProcessCore(request); }
+            catch (Exception e) { throw NodeExecutionException.Wrap(a, request.Port, e); }
+        }
+
+        void ProcessCore(Request request)
+        {
+            var a = request.Activation;
+            if (request.ErrorCode != null) { Fault(request.ErrorCode, request.ErrorMessage, a, request.Port); return; }
             if (request.Cancel)
             {
                 if (a.Context != null && a.Context.Video == a) CloseVideo(a.Context, null, null);
@@ -476,8 +511,19 @@ namespace GameFrameX.Movie.Runtime
         void UpdateActivation(Activation a, float delta, float real)
         {
             if (!CanRun || a == null || a.State != FlowActivationState.Active || a.Terminal) return;
-            a.Behavior.Update(delta, real);
+            try { a.Behavior.Update(delta, real); }
+            catch (Exception e) { throw NodeExecutionException.Wrap(a, null, e); }
             Notify(FlowEventKind.NodeUpdated, a, delta: delta, real: real);
+        }
+
+        sealed class NodeExecutionException : Exception
+        {
+            public readonly Activation Activation;
+            public readonly string Output;
+            NodeExecutionException(Activation activation, string output, Exception error) : base(error.Message, error)
+            { Activation = activation; Output = output; }
+            public static NodeExecutionException Wrap(Activation activation, string output, Exception error)
+            { return error as NodeExecutionException ?? new NodeExecutionException(activation, output, error); }
         }
 
         void UpdateVideo(float delta, float real)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.1 — 2026-11-11
+
+- Remove fixed logging sinks from MovieComponent, VideoFlowHost and FlowUiService; hosts choose optional logging through structured FlowEvent notifications.
+- Preserve faulting activation, ports and original exceptions across cleanup; report listener and secondary cleanup exceptions without recursive diagnostics.
+- Keep GF module/UGUI dependencies and lifecycle unchanged; make UI cleanup finish registry removal and close callbacks when binding disposal fails.
+- Verify 184/184 EditMode tests in the isolated local-file Unity package installation, including fault identity, observer isolation, compound cleanup and reentrant diagnostic callbacks.
+
 ## 1.2.0 — 2026-11-11
 
 - Add the GameFrameX MovieComponent → IMovieManager → MovieManager entry with explicit catalog loading, multiple cached chapter graphs and one executing chapter.

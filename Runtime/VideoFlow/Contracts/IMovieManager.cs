@@ -18,6 +18,7 @@ namespace GameFrameX.Movie.Runtime
         VideoExecutionSnapshot CurrentVideo { get; }
         IReadOnlyList<FlowActivation> ActiveNodes { get; }
         IReadOnlyDictionary<string, object> Values { get; }
+        /// <summary>可选生命周期、故障与诊断通知；由宿主自行选择日志输出。</summary>
         event Action<FlowEvent> EventRaised;
         void SetDependencies(IVideoFlowLoader loader, IFlowNodeBehaviorFactory behaviorFactory);
         GraphResult<bool> LoadCatalog(string catalogJson);

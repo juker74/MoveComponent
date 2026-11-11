@@ -3,7 +3,7 @@
 可通过 Git URL 安装的私有 Unity UPM 源码仓库，包含完整的多端口节点编辑器、视频/UI 节点扩展、JSON 导入导出和影视流程驱动，并在 `Plugins/ParadoxNotion` 内置完整的 NodeCanvas / CanvasCore 源码与编辑器资源。仓库根目录的 `package.json` 就是包入口，不需要 `?path=`，也不需要导出 `.unitypackage`。
 
 - 包名：`com.gameframex.unity.movecomponent`
-- 版本：`1.2.0`
+- 版本：`1.2.1`
 - Unity：`2022.3` 起，验证版本 `2022.3.62f3`；编辑器与驱动的验证结果，详见 [验证记录](Documentation~/Validation.md)。
 - 内置 CanvasCore：`FRAMEWORK_VERSION = 3.30`，保留 `ParadoxNotion` 与 `NodeCanvas` 程序集。
 - 保留现有命名空间、程序集名称与脚本 GUID，便于迁移原项目。
@@ -25,7 +25,7 @@
 4. 在 Unity **Window → Package Manager → + → Add package from git URL** 输入以下地址：
 
 ```text
-https://github.com/juker74/MoveComponent.git#v1.2.0
+https://github.com/juker74/MoveComponent.git#v1.2.1
 ```
 
 `package.json` 中声明的 GameFrameX 与 Unity 依赖会由 UPM 解析。包内的 registry 配置示例供宿主项目合并，UPM 不会从依赖包自动设置项目的 scoped registries。
@@ -42,6 +42,8 @@ https://github.com/juker74/MoveComponent.git#v1.2.0
 6. 具体影视 UI 继承 `Game.Framework.UI.MovieUIForm`。项目 UI 接入层订阅 `FlowUiService.Opened`，按请求类型创建界面后调用 `Bind(request, form)`，订阅 `Closed` 清理界面。具体控件与业务预制体由目标项目提供。
 
 现代入口为 `MovieComponent → IMovieManager → MovieManager`：目录元数据、多个章节图缓存和单个执行章节分别管理，框架统一调用模块 Update/Shutdown。业务通过组件的 `LoadCatalog`、`LoadChapter`、`PlayChapter`、`Stop` 与卸载 API 控制流程；`GraphKey` 只交给宿主资源系统解析，不会自动读取文件或播放下一章。完整场景绑定与业务调用见 [影视流程](Documentation~/VideoFlow.md)。
+
+Movie 运行时通过可选 `EventRaised` 通知故障与诊断，由宿主选择 GFX、Unity 或其他日志输出；未订阅时照常运行。现有 GFX 模块与 UGUI 依赖保留。接入示例见 [故障诊断与宿主日志](Documentation~/VideoFlow.md#故障诊断与宿主日志)。
 
 UI/逻辑节点可以附属于来源视频。数据节点是每次章节播放共享的值容器：图内视频循环保留当前值，再次 `PlayChapter`（包括同章重播）恢复章节初始值。旧 `VideoFlowDriver`、`VideoFlowHost` 和 FSM 接入保留为兼容入口；每个实例只能有一个更新来源。Runtime 不依赖 UnityEditor 或 NodeCanvas 编辑器。
 

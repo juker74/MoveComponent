@@ -6,6 +6,7 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.Video;
 using Object = UnityEngine.Object;
 
@@ -21,6 +22,175 @@ namespace Game.VideoFlow.Tests
     }
     public class VideoFlowUnityTests
     {
+        [TestCase(false)]
+        [TestCase(true)]
+        public void HostForwardsFaultsWithoutLoggingAndReportsThrowingSubscribers(bool throwingSubscriber)
+        {
+            var owner = new GameObject("HostDiagnosticTest");
+            var json = new TextAsset("{\"schemaVersion\":1,\"id\":\"fault-graph\",\"name\":\"Fault\",\"nodes\":[{\"id\":\"v\",\"typeId\":\"media.video\",\"title\":\"v\",\"x\":0,\"y\":0,\"properties\":{\"source\":\"Assets/missing.mp4\"}}],\"edges\":[]}");
+            var logs = new List<string>();
+            Application.LogCallback logged = (message, stack, kind) => logs.Add(message);
+            bool ignored = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            Application.logMessageReceived += logged;
+            try
+            {
+                var ui = owner.AddComponent<FlowUiService>();
+                var host = owner.AddComponent<VideoFlowHost>();
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                typeof(VideoFlowHost).GetField("graphJson", flags).SetValue(host, json);
+                typeof(VideoFlowHost).GetField("entryNodeId", flags).SetValue(host, "v");
+                typeof(VideoFlowHost).GetField("uiService", flags).SetValue(host, ui);
+                var events = new List<FlowEvent>();
+                var failure = new InvalidOperationException("host observer failed");
+                host.EventRaised += e => { if (throwingSubscriber && e.Kind == FlowEventKind.FlowFaulted) throw failure; };
+                host.EventRaised += events.Add;
+                Assert.Throws<InvalidOperationException>(() => host.Play());
+                Assert.That(events.FindAll(e => e.Kind == FlowEventKind.FlowFaulted).Count, Is.EqualTo(1));
+                var diagnostics = events.FindAll(e => e.Kind == FlowEventKind.Diagnostic);
+                Assert.That(diagnostics.Count, Is.EqualTo(throwingSubscriber ? 1 : 0));
+                if (throwingSubscriber)
+                {
+                    Assert.That(diagnostics[0].ErrorCode, Is.EqualTo("ObserverException"));
+                    Assert.That(diagnostics[0].ErrorMessage, Does.Contain(failure.Message));
+                    Assert.That(diagnostics[0].Exception, Is.SameAs(failure));
+                    Assert.That(diagnostics[0].RelatedEventKind, Is.EqualTo(FlowEventKind.FlowFaulted));
+                    Assert.That(diagnostics[0].GraphId, Is.EqualTo("fault-graph"));
+                }
+                Assert.That(host.Driver.Status, Is.EqualTo(FlowStatus.Faulted));
+                Assert.That(logs, Is.Empty);
+            }
+            finally
+            {
+                Application.logMessageReceived -= logged;
+                LogAssert.ignoreFailingMessages = ignored;
+                Object.DestroyImmediate(owner);
+                Object.DestroyImmediate(json);
+            }
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DisableReportsCleanupFailuresAndRemovesEverySessionEvenWhenBindingThrows(bool closedThrows)
+        {
+            var owner = new GameObject("UiDiagnosticTest");
+            var logs = new List<string>();
+            Application.LogCallback logged = (message, stack, kind) => logs.Add(message);
+            bool ignored = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            Application.logMessageReceived += logged;
+            try
+            {
+                var service = owner.AddComponent<FlowUiService>();
+                var form = owner.AddComponent<UnityTestMovieUI>();
+                var diagnostics = new List<FlowEvent>();
+                ObserveUiDiagnostics(service, diagnostics);
+                var closed = new List<long>();
+                var closedFailure = new InvalidOperationException("close cleanup failed");
+                Action<long> closing = id => { closed.Add(id); if (closedThrows && id == 1) throw closedFailure; };
+                service.Closed += closing;
+                var first = service.Open(new FlowUiRequest(typeof(UnityTestMovieUI), null, 1));
+                var second = service.Open(new FlowUiRequest(typeof(UnityTestMovieUI), null, 2));
+                Assert.That(service.Bind(2, form), Is.True);
+                var failure = new InvalidOperationException("binding cleanup failed");
+                first.GetType().GetField("Binding").SetValue(first, new ThrowingDisposable(failure));
+                typeof(FlowUiService).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(service, null);
+                Assert.That(first.Status, Is.EqualTo(FlowUiStatus.Cancelled));
+                Assert.That(second.Status, Is.EqualTo(FlowUiStatus.Cancelled));
+                Assert.That(form.BranchCount, Is.Zero);
+                Assert.That(closed, Is.EquivalentTo(new long[] { 1, 2 }));
+                Assert.That(diagnostics.Count, Is.EqualTo(1));
+                Assert.That(diagnostics[0].ErrorCode, Is.EqualTo("UiCleanup"));
+                Assert.That(diagnostics[0].ActivationId, Is.EqualTo(1));
+                Assert.That(diagnostics[0].ErrorMessage, Does.Contain(failure.Message));
+                if (closedThrows)
+                {
+                    Assert.That(diagnostics[0].Exception, Is.TypeOf<AggregateException>());
+                    Assert.That(((AggregateException)diagnostics[0].Exception).InnerExceptions, Is.EqualTo(new[] { failure, closedFailure }));
+                }
+                else Assert.That(diagnostics[0].Exception, Is.SameAs(failure));
+                Assert.That(logs, Is.Empty);
+                service.Closed -= closing;
+                using (service.Open(new FlowUiRequest(typeof(UnityTestMovieUI), null, 1))) { }
+                using (service.Open(new FlowUiRequest(typeof(UnityTestMovieUI), null, 2))) { }
+            }
+            finally
+            {
+                Application.logMessageReceived -= logged;
+                LogAssert.ignoreFailingMessages = ignored;
+                Object.DestroyImmediate(owner);
+            }
+        }
+
+        [Test]
+        public void DisableContinuesClosingSessionsAfterClosedCallbackThrows()
+        {
+            var owner = new GameObject("UiClosedDiagnosticTest");
+            var logs = new List<string>();
+            Application.LogCallback logged = (message, stack, kind) => logs.Add(message);
+            bool ignored = LogAssert.ignoreFailingMessages;
+            LogAssert.ignoreFailingMessages = true;
+            Application.logMessageReceived += logged;
+            try
+            {
+                var service = owner.AddComponent<FlowUiService>();
+                var diagnostics = new List<FlowEvent>();
+                ObserveUiDiagnostics(service, diagnostics);
+                var closed = new List<long>();
+                service.Closed += id => { closed.Add(id); if (id == 1) throw new InvalidOperationException("close failed"); };
+                var first = service.Open(new FlowUiRequest(typeof(UnityTestMovieUI), null, 1));
+                var second = service.Open(new FlowUiRequest(typeof(UnityTestMovieUI), null, 2));
+                typeof(FlowUiService).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(service, null);
+                Assert.That(closed, Is.EquivalentTo(new long[] { 1, 2 }));
+                Assert.That(first.Status, Is.EqualTo(FlowUiStatus.Cancelled));
+                Assert.That(second.Status, Is.EqualTo(FlowUiStatus.Cancelled));
+                Assert.That(diagnostics.Count, Is.EqualTo(1));
+                Assert.That(diagnostics[0].ActivationId, Is.EqualTo(1));
+                Assert.That(diagnostics[0].ErrorMessage, Does.Contain("close failed"));
+                Assert.That(logs, Is.Empty);
+            }
+            finally
+            {
+                Application.logMessageReceived -= logged;
+                LogAssert.ignoreFailingMessages = ignored;
+                Object.DestroyImmediate(owner);
+            }
+        }
+
+        [Test]
+        public void OpenPreservesOriginalFailureWhenCleanupAlsoThrows()
+        {
+            var owner = new GameObject("UiOpenDiagnosticTest");
+            try
+            {
+                var service = owner.AddComponent<FlowUiService>();
+                var diagnostics = new List<FlowEvent>();
+                ObserveUiDiagnostics(service, diagnostics);
+                var failure = new InvalidOperationException("open failed");
+                var closedFailure = new InvalidOperationException("close failed");
+                service.Opened += request => { throw failure; };
+                service.Closed += id => { throw closedFailure; };
+                Assert.That(Assert.Throws<InvalidOperationException>(() => service.Open(new FlowUiRequest(typeof(UnityTestMovieUI), null, 1))), Is.SameAs(failure));
+                Assert.That(diagnostics.Count, Is.EqualTo(1));
+                Assert.That(diagnostics[0].ActivationId, Is.EqualTo(1));
+                Assert.That(diagnostics[0].ErrorMessage, Does.Contain("close failed"));
+                Assert.That(diagnostics[0].Exception, Is.SameAs(closedFailure));
+            }
+            finally { Object.DestroyImmediate(owner); }
+        }
+
+        static void ObserveUiDiagnostics(FlowUiService service, List<FlowEvent> events)
+        {
+            service.EventRaised += e => { if (e.Kind == FlowEventKind.Diagnostic) events.Add(e); };
+        }
+
+        sealed class ThrowingDisposable : IDisposable
+        {
+            readonly Exception failure;
+            public ThrowingDisposable(Exception failure) { this.failure = failure; }
+            public void Dispose() { throw failure; }
+        }
+
         [Test] public void ReentrantBindCannotLeaveAnUntrackedUiBinding()
         {
             var owner=new GameObject("UiBranchTest");

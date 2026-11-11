@@ -16,6 +16,146 @@ namespace Game.VideoFlow.Tests
         const string GraphA = "{\"schemaVersion\":1,\"id\":\"graph-a\",\"name\":\"Alpha\",\"nodes\":[{\"id\":\"v\",\"typeId\":\"media.video\",\"title\":\"Video\",\"x\":0,\"y\":0,\"properties\":{\"source\":\"alpha.mp4\"}}],\"edges\":[]}";
         const string GraphB = "{\"schemaVersion\":1,\"id\":\"graph-b\",\"name\":\"Beta\",\"nodes\":[{\"id\":\"v\",\"typeId\":\"media.video\",\"title\":\"Video\",\"x\":0,\"y\":0,\"properties\":{\"source\":\"beta.mp4\"}}],\"edges\":[]}";
 
+        [TestCase("factory")]
+        [TestCase("enter")]
+        [TestCase("update")]
+        [TestCase("exit")]
+        [TestCase("dispose")]
+        [TestCase("request")]
+        public void FaultKeepsFailingActivationContextAfterCleanup(string stage)
+        {
+            var factory = new FailingFactory(stage);
+            var movie = new MovieManager();
+            movie.SetDependencies(new VideoFlowLoader(), factory);
+            var events = new List<FlowEvent>(); movie.EventRaised += events.Add;
+            try
+            {
+                Assert.That(movie.LoadCatalog(Catalog).Success, Is.True);
+                Assert.That(movie.LoadChapter("a", RoutedGraphA).Success, Is.True);
+                movie.PlayChapter("a");
+                if (stage == "update" || stage == "request") Update(movie);
+                if (stage == "request") Update(movie);
+                if (stage == "exit" || stage == "dispose")
+                {
+                    factory.Context.Complete("completed");
+                    Update(movie);
+                }
+                var fault = events.Single(e => e.Kind == FlowEventKind.FlowFaulted);
+                Assert.That(fault.GraphId, Is.EqualTo("graph-a"));
+                Assert.That(fault.ChapterId, Is.EqualTo("a"));
+                Assert.That(fault.NodeId, Is.EqualTo("v"));
+                Assert.That(fault.ActivationId, Is.GreaterThan(0));
+                Assert.That(fault.Exception, stage == "request" ? Is.Null : Is.SameAs(factory.Failure));
+                if (stage == "exit" || stage == "dispose") Assert.That(fault.OutputPortId, Is.EqualTo("completed"));
+                Assert.That(fault.ErrorMessage, Is.EqualTo("failure:" + stage));
+                Assert.That(movie.Status, Is.EqualTo(FlowStatus.Faulted));
+                Assert.That(movie.ActiveNodes, Is.Empty);
+            }
+            finally { movie.UnloadCatalog(); }
+        }
+
+        [Test]
+        public void ObserverFailureIsReportedWithOriginalContextWithoutRecursiveDiagnostics()
+        {
+            var movie = Manager(new RecordingPlayback());
+            var events = new List<FlowEvent>();
+            var failure = new InvalidOperationException("observer failure");
+            movie.EventRaised += e => { throw failure; };
+            movie.EventRaised += e => { if (e.Kind == FlowEventKind.Diagnostic) throw new InvalidOperationException("diagnostic failure"); };
+            movie.EventRaised += events.Add;
+            try
+            {
+                movie.LoadCatalog(Catalog); movie.LoadChapter("a", GraphA); movie.PlayChapter("a");
+                var entered = events.Single(e => e.Kind == FlowEventKind.NodeEntered);
+                var diagnostics = events.Where(e => e.Kind == FlowEventKind.Diagnostic && e.NodeId == "v").ToArray();
+                Assert.That(diagnostics.Length, Is.EqualTo(1));
+                Assert.That(diagnostics[0].ChapterId, Is.EqualTo(entered.ChapterId));
+                Assert.That(diagnostics[0].GraphId, Is.EqualTo(entered.GraphId));
+                Assert.That(diagnostics[0].ActivationId, Is.EqualTo(entered.ActivationId));
+                Assert.That(diagnostics[0].ErrorMessage, Is.EqualTo("observer failure"));
+                Assert.That(diagnostics[0].Exception, Is.SameAs(failure));
+                Assert.That(diagnostics[0].RelatedEventKind, Is.EqualTo(FlowEventKind.NodeEntered));
+                Assert.That(movie.Status, Is.EqualTo(FlowStatus.Running));
+                movie.Stop();
+                Assert.That(events.Any(e => e.Kind == FlowEventKind.FlowStopped), Is.True);
+                Assert.That(movie.ActiveNodes, Is.Empty);
+            }
+            finally { movie.UnloadCatalog(); }
+        }
+
+        [Test]
+        public void PrimaryFailureIsPreservedWhenExitAndDisposeAlsoFail()
+        {
+            var factory = new FailingFactory("update+exit+dispose");
+            var movie = new MovieManager(); movie.SetDependencies(new VideoFlowLoader(), factory);
+            var events = new List<FlowEvent>(); movie.EventRaised += events.Add;
+            try
+            {
+                movie.LoadCatalog(Catalog); movie.LoadChapter("a", GraphA); movie.PlayChapter("a");
+                Update(movie);
+                var fault = events.Single(e => e.Kind == FlowEventKind.FlowFaulted);
+                Assert.That(fault.Exception, Is.SameAs(factory.Failure));
+                Assert.That(fault.ErrorMessage, Is.EqualTo("failure:update"));
+                var cleanup = events.Where(e => e.Kind == FlowEventKind.Diagnostic && e.ErrorCode == "Cleanup").ToArray();
+                Assert.That(cleanup.Select(e => e.ErrorMessage), Is.EquivalentTo(new[] { "failure:exit", "failure:dispose" }));
+                Assert.That(cleanup.All(e => e.NodeId == "v" && e.ActivationId == fault.ActivationId), Is.True);
+                Assert.That(factory.DisposeCount, Is.EqualTo(1));
+                Assert.That(movie.Status, Is.EqualTo(FlowStatus.Faulted));
+                Assert.That(movie.ActiveNodes, Is.Empty);
+            }
+            finally { movie.UnloadCatalog(); }
+        }
+
+        [Test]
+        public void AttachedUiFailureIdentifiesUiActivationAndInputRatherThanSourceVideo()
+        {
+            var factory = new FailingFactory("update", "u");
+            var movie = new MovieManager(); movie.SetDependencies(new VideoFlowLoader(), factory);
+            var events = new List<FlowEvent>(); movie.EventRaised += events.Add;
+            try
+            {
+                movie.LoadCatalog(Catalog); movie.LoadChapter("a", UiGraphA); movie.PlayChapter("a");
+                Assert.That(movie.CurrentVideo.NodeId, Is.EqualTo("v"));
+                factory.Context.Emit("frame:0"); Update(movie);
+                var entered = events.Single(e => e.Kind == FlowEventKind.NodeEntered && e.NodeId == "u");
+                var fault = events.Single(e => e.Kind == FlowEventKind.FlowFaulted);
+                Assert.That(fault.NodeId, Is.EqualTo("u"));
+                Assert.That(fault.InputPortId, Is.EqualTo("enter"));
+                Assert.That(fault.ActivationId, Is.EqualTo(entered.ActivationId));
+                Assert.That(fault.Exception, Is.SameAs(factory.Failure));
+                Assert.That(factory.DisposeCount, Is.EqualTo(2));
+                Assert.That(movie.ActiveNodes, Is.Empty);
+            }
+            finally { movie.UnloadCatalog(); }
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DiagnosticListenerCanRequestCleanupWithoutOpeningAnotherVideo(bool unload)
+        {
+            var playback = new RecordingPlayback(); var movie = Manager(playback);
+            bool requested = false;
+            movie.EventRaised += e => { if (e.Kind == FlowEventKind.NodeUpdated) throw new InvalidOperationException("observer failure"); };
+            movie.EventRaised += e =>
+            {
+                if (e.Kind != FlowEventKind.Diagnostic || requested) return;
+                requested = true;
+                if (unload) movie.UnloadCatalog(); else movie.Stop();
+            };
+            try
+            {
+                movie.LoadCatalog(Catalog); movie.LoadChapter("a", RoutedGraphA); movie.PlayChapter("a");
+                Update(movie);
+                Assert.That(requested, Is.True);
+                Assert.That(movie.Status, Is.EqualTo(unload ? FlowStatus.Empty : FlowStatus.Stopped));
+                Assert.That(movie.ActiveNodes, Is.Empty);
+                Assert.That(playback.Sessions.Single().DisposeCount, Is.EqualTo(1));
+                Assert.That(playback.Sources, Is.EqualTo(new[] { "alpha.mp4" }));
+                if (unload) Assert.That(movie.Chapters, Is.Empty);
+            }
+            finally { movie.UnloadCatalog(); }
+        }
+
         [Test]
         public void LoadingChapterBWhileARunsKeepsAExecutionAndBothCachedChapters()
         {
@@ -435,6 +575,37 @@ namespace Game.VideoFlow.Tests
             public GraphResult<IVideoFlowGraph> Load(string json)
             {
                 Callback?.Invoke(); if (Throw) throw new InvalidOperationException("loader failure"); return new VideoFlowLoader().Load(json);
+            }
+        }
+        sealed class FailingFactory : IFlowNodeBehaviorFactory
+        {
+            readonly string stage;
+            readonly string target;
+            public IFlowNodeContext Context;
+            public readonly Exception Failure;
+            public int DisposeCount;
+            public FailingFactory(string stage, string target = "v")
+            { this.stage = stage; this.target = target; Failure = new InvalidOperationException("failure:" + stage.Split('+')[0]); }
+            public bool Supports(string type) { return true; }
+            public IFlowNodeBehavior Create(IFlowNode node)
+            {
+                if (stage == "factory") throw Failure;
+                return new Behavior(this, node.Id);
+            }
+            sealed class Behavior : IFlowNodeBehavior
+            {
+                readonly FailingFactory owner;
+                readonly string nodeId;
+                public Behavior(FailingFactory owner, string nodeId) { this.owner = owner; this.nodeId = nodeId; }
+                void Fail(string stage)
+                {
+                    if (nodeId != owner.target || !owner.stage.Split('+').Contains(stage)) return;
+                    throw stage == owner.stage.Split('+')[0] ? owner.Failure : new InvalidOperationException("failure:" + stage);
+                }
+                public void Enter(IFlowNodeContext context) { owner.Context = context; Fail("enter"); }
+                public void Update(float delta, float real) { Fail("update"); if (owner.stage == "request") owner.Context.Fail("Requested", "failure:request"); }
+                public void Exit() { Fail("exit"); }
+                public void Dispose() { owner.DisposeCount++; Fail("dispose"); }
             }
         }
         sealed class CallbackFactory : IFlowNodeBehaviorFactory

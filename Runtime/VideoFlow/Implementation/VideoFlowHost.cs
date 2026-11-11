@@ -42,7 +42,7 @@ namespace Game.VideoFlow
                 if(binding!=null && binding.clip!=null && (binding.sourceOrGuid==request.Source || (!string.IsNullOrEmpty(request.AssetGuid) && binding.sourceOrGuid==request.AssetGuid)))return binding.clip;
             return null;
         }
-        void OnFlowEvent(FlowEvent evt){EventRaised?.Invoke(evt);if(evt.Kind==FlowEventKind.FlowFaulted)Debug.LogError("VideoFlow: "+evt.ErrorCode+" "+evt.ErrorMessage,this);}
+        void OnFlowEvent(FlowEvent evt){FlowEventDispatcher.Raise(EventRaised,evt);}
         void Update(){Driver?.Tick(Time.deltaTime,Time.unscaledDeltaTime);}
         void OnDisable(){Stop();}
         void OnDestroy(){destroyed=true;Driver?.Dispose();Driver=null;}
