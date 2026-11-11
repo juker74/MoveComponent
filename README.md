@@ -3,8 +3,8 @@
 可通过 Git URL 安装的私有 Unity UPM 源码仓库，包含完整的多端口节点编辑器、视频/UI 节点扩展、JSON 导入导出和影视流程驱动，并在 `Plugins/ParadoxNotion` 内置完整的 NodeCanvas / CanvasCore 源码与编辑器资源。仓库根目录的 `package.json` 就是包入口，不需要 `?path=`，也不需要导出 `.unitypackage`。
 
 - 包名：`com.gameframex.unity.movecomponent`
-- 版本：`1.0.1`
-- Unity：`2022.3` 起，验证版本 `2022.3.62f3`；内置插件布局已通过 87 项测试，详见 [验证记录](Documentation~/Validation.md)。
+- 版本：`1.1.0`
+- Unity：`2022.3` 起，验证版本 `2022.3.62f3`；编辑器与驱动的验证结果，详见 [验证记录](Documentation~/Validation.md)。
 - 内置 CanvasCore：`FRAMEWORK_VERSION = 3.30`，保留 `ParadoxNotion` 与 `NodeCanvas` 程序集。
 - 保留现有命名空间、程序集名称与脚本 GUID，便于迁移原项目。
 
@@ -22,10 +22,10 @@
 }
 ```
 
-4. 在 Unity **Window → Package Manager → + → Add package from git URL** 输入以下地址，安装 `v1.0.1`：
+4. 在 Unity **Window → Package Manager → + → Add package from git URL** 输入以下地址，安装 `v1.1.0`：
 
 ```text
-https://github.com/juker74/MoveComponent.git#v1.0.1
+https://github.com/juker74/MoveComponent.git#v1.1.0
 ```
 
 `package.json` 中声明的 GameFrameX 与 Unity 依赖会由 UPM 解析。包内的 registry 配置示例供宿主项目合并，UPM 不会从依赖包自动设置项目的 scoped registries。
@@ -37,8 +37,9 @@ https://github.com/juker74/MoveComponent.git#v1.0.1
 1. 通过 **Tools → GameFrameX → Node Composer → 创建图** 新建图，双击图资产打开编辑器。
 2. 添加视频、UI、数据、修改或条件节点，用控制线决定执行顺序，用带类型的数据端口传值；视频支持拖入 VideoClip、画面预览和多个帧输出，UI 支持类型选择及动态结果端口。
 3. 在工具栏导入/导出 JSON。Package Manager 的 **Samples → Graph Examples → Import** 提供可导入的示例图与短视频。
-4. 在场景添加 `Game.VideoFlow.VideoFlowHost` 和 `FlowUiService`，配置导出的 JSON、入口节点 ID、视频纹理与 Clips 映射，并勾选 Play On Start。
-5. 具体影视 UI 继承 `Game.Framework.UI.MovieUIForm`。项目 UI 接入层订阅 `FlowUiService.Opened`，按请求类型创建界面后调用 `Bind(request, form)`，订阅 `Closed` 清理界面。具体控件与业务预制体由目标项目提供。
+4. 通过 **Tools → GameFrameX → Node Composer → 创建章节目录** 将多张 Graph 整理为有序章节，选择各章入口与默认起始章节，在 Inspector 中统一校验、导入和导出。详见 [章节目录编辑](Documentation~/ChapterCatalog.md)。此版本先提供章节编辑与数据交换，运行时自动切章尚未接入。
+5. 在场景添加 `Game.VideoFlow.VideoFlowHost` 和 `FlowUiService`，配置导出的单张图 JSON、入口节点 ID、视频纹理与 Clips 映射，并勾选 Play On Start。
+6. 具体影视 UI 继承 `Game.Framework.UI.MovieUIForm`。项目 UI 接入层订阅 `FlowUiService.Opened`，按请求类型创建界面后调用 `Bind(request, form)`，订阅 `Closed` 清理界面。具体控件与业务预制体由目标项目提供。
 
 驱动通过有向图和主流程状态机运行；UI/逻辑节点可以附属于来源视频。数据节点是每次运行共享的值容器：视频循环保留当前值，重新 Start 恢复初始值。MoveComponent 的 Runtime 代码不依赖 UnityEditor 或 NodeCanvas 编辑器。
 
@@ -47,11 +48,11 @@ https://github.com/juker74/MoveComponent.git#v1.0.1
 | 目录 | 内容 |
 | --- | --- |
 | `Runtime/NodeComposer` | 图协议、严格 JSON、类型注册、数据/条件/修改节点定义 |
-| `Runtime/VideoNodes` | 视频、帧端口、UI 类型配置和动态分支协议 |
+| `Runtime/VideoNodes` | 视频、帧端口、UI 类型配置、动态分支和章节目录协议 |
 | `Runtime/VideoFlow` | 图加载、运行值存储、节点生命周期、驱动状态机和播放器/UI 服务 |
 | `Runtime/Integrations/GameFrameX` | MovieUIForm 基类与 GameFrameX FSM 更新适配 |
 | `Editor/NodeComposer` | 节点画布、多端口连线、属性配置、JSON 文件操作 |
-| `Editor/VideoNodes` | 视频预览、资源拖拽、帧编辑、影视 UI 类选择与分支编辑 |
+| `Editor/VideoNodes` | 视频预览、资源拖拽、帧编辑、影视 UI 类选择、分支与章节目录编辑 |
 | `Plugins/ParadoxNotion` | 完整 NodeCanvas / CanvasCore、编辑器资源及原始 FullSerializer MIT 许可文本 |
 | `Tests/Editor` | 协议、驱动、Unity 接入及编辑器测试和测试视频 |
 | `Samples~` | 可通过 Package Manager 导入的示例 |
@@ -64,6 +65,7 @@ https://github.com/juker74/MoveComponent.git#v1.0.1
 - [完整依赖、Git 地址与版本](Documentation~/Dependencies.md)
 - [节点编辑器](Documentation~/NodeComposer.md)
 - [视频/UI 扩展](Documentation~/VideoNodes.md)
+- [章节目录编辑与整批 JSON 交换](Documentation~/ChapterCatalog.md)
 - [驱动、UI 接入与值类型扩展](Documentation~/VideoFlow.md)
 - [验证记录](Documentation~/Validation.md)
 

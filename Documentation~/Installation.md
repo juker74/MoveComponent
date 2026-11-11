@@ -7,7 +7,7 @@
 1. 确认当前 Git 账号有 `juker74/MoveComponent` 私有仓库的访问权限，并已配置 Git 凭据管理器或系统钥匙串，使 Unity 调用 Git 时能使用现有凭据。不要把 token 写入 Git URL、manifest 或仓库文件。
 2. 本包在 `Plugins/ParadoxNotion` 内置完整 NodeCanvas / CanvasCore 源码与资源；CanvasCore 的 `FRAMEWORK_VERSION = 3.30`。若宿主项目已有 `Assets/Plugins/ParadoxNotion` 或其他副本，先将重复插件移出 `Assets`、备份到工程外，避免重复 GUID、程序集和类型。无需另行安装插件。
 3. 在目标项目 Packages/manifest.json 中合并 GameFrameX scoped registry，配置见 README 和 `project-manifest.registry.example.json`。
-4. 通过 Package Manager 的 Add package from git URL 使用 `https://github.com/juker74/MoveComponent.git#v1.0.1` 安装；GameFrameX 与 Unity 依赖版本由包的 package.json 声明。
+4. 通过 Package Manager 的 Add package from git URL 使用 `https://github.com/juker74/MoveComponent.git#v1.1.0` 安装；GameFrameX 与 Unity 依赖版本由包的 package.json 声明。
 
 package.json 的 dependencies 使用 UPM 版本号。Git 地址写在宿主项目 manifest 的 dependencies 中。仓库同时提供 `project-manifest.git.example.json`，列出所有 GameFrameX 直接/传递依赖的 Git 地址和已核对版本标签；使用时同样合并已有 manifest，不能覆盖项目其他依赖。
 

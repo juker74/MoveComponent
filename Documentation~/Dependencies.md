@@ -22,7 +22,7 @@ GameFrameX 依赖沿用 1.0.0 历史验证固定的版本组合，包括 UI 引�
 
 推荐方式：在宿主项目合并 GameFrameX scoped registry，再通过 Git URL 安装 MoveComponent。配置示例见 project-manifest.registry.example.json。
 
-全 Git 方式：合并 project-manifest.git.example.json 到宿主 manifest.dependencies，它包含以上全部 GameFrameX 直接/传递依赖，使用已核对标签；Unity 自有包仍由 Unity registry 提供。MoveComponent 使用私有 Git 地址 `https://github.com/juker74/MoveComponent.git#v1.0.1`；访问者需要仓库权限与现有 Git 凭据，不要把 token 放进 URL。
+全 Git 方式：合并 project-manifest.git.example.json 到宿主 manifest.dependencies，它包含以上全部 GameFrameX 直接/传递依赖，使用已核对标签；Unity 自有包仍由 Unity registry 提供。MoveComponent 使用私有 Git 地址 `https://github.com/juker74/MoveComponent.git#v1.1.0`；访问者需要仓库权限与现有 Git 凭据，不要把 token 放进 URL。
 
 ## 内置 NodeCanvas / ParadoxNotion
 
@@ -30,7 +30,7 @@ GameFrameX 依赖沿用 1.0.0 历史验证固定的版本组合，包括 UI 引�
 - 程序集：`ParadoxNotion`（含 NodeCanvas.Framework 与 NodeCanvas.Editor）和 `NodeCanvas`；保留原程序集名称与 `.meta` GUID。
 - CanvasCore 版本：`3.30`，取自内置源码 `CanvasCore/Framework/Runtime/Graphs/Internal/GraphSource.cs` 的 `FRAMEWORK_VERSION`。内置布局已在 Unity 2022.3.62f3 验证，详情见 Validation.md。
 - 原作者 / 来源：Gavalakis Evangelos / ParadoxNotion，https://nodecanvas.paradoxnotion.com/ 。
-- 分发方式：随本私有仓库的 MoveComponent `v1.0.1` 一起安装；原安装文件没有独立的 Git URL 或 UPM 包名，不额外声明虚构的插件依赖。
+- 分发方式：随本私有仓库的 MoveComponent `v1.1.0` 一起安装；原安装文件没有独立的 Git URL 或 UPM 包名，不额外声明虚构的插件依赖。
 - 宿主项目若已有 `Assets/Plugins/ParadoxNotion` 或其他 NodeCanvas / CanvasCore 副本，先将重复插件移出 `Assets` 并备份到工程外，避免重复 GUID、程序集和类型。
 - 许可与署名：见仓库根目录 `Third Party Notices.md`；保留原作者信息和 FullSerializer 的原始 MIT 许可文本，包根 Apache-2.0 不覆盖 NodeCanvas / CanvasCore。
 

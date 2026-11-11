@@ -280,13 +280,13 @@
     }
   },
   "external": [],
-  "packageVersion": "1.0.1",
+  "packageVersion": "1.1.0",
   "targetUnity": "2022.3.62f3",
-  "validationStatus": "1.0.1 bundled-plugin local file and private remote Git UPM validation passed in Unity 2022.3.62f3: all 15 assemblies from package; 7 editor resources loaded; 87/87 EditMode tests in each project. See Validation.md.",
+  "validationStatus": "1.1.0 local file UPM validation passed in an isolated Unity 2022.3.62f3 project: 107/107 EditMode tests across 5 test assemblies; structure validation passed with 507 C# sources, 15 assemblies and 764 unique GUIDs. Private remote Git installation and target GameFrameX.Unity verification for v1.1.0 are pending. See Validation.md for separate historical v1.0.1 Git validation.",
   "repository": {
     "url": "https://github.com/juker74/MoveComponent.git",
     "visibility": "private",
-    "tag": "v1.0.1",
+    "tag": "v1.1.0",
     "authentication": "Use existing Git credentials for an authorized account; never embed a token in the URL."
   },
   "bundled": [

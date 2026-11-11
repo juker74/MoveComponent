@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0 — 2026-11-11
+
+- Add a chapter catalog asset and Inspector with stable IDs, ordered chapters, graph references, explicit entry selection and Undo/Redo.
+- Add strict runtime catalog DTO/JSON interchange, complete chapter-bundle export, and import into fresh assets with validation and rollback.
+- Keep the existing single-graph driver unchanged; chapter scheduling is outside this editor release.
+
 ## 1.0.1 — 2026-11-11
 
 - Bundle the complete existing ParadoxNotion NodeCanvas / CanvasCore source tree and editor resources under Plugins/ParadoxNotion, preserving original assemblies and .meta GUIDs.

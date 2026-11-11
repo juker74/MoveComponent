@@ -5,6 +5,8 @@
     "GameFrameX.NodeComposer.Runtime",
     "GameFrameX.NodeComposer.Editor",
     "GameFrameX.NodeComposer.Video.Runtime",
+    "Game.VideoFlow.Runtime",
+    "Game.VideoFlow.Contracts",
     "ParadoxNotion",
     "Game.Framework.MovieUI"
   ],
