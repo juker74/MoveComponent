@@ -13,3 +13,7 @@
 验证覆盖模块生命周期、加载去重、加载与播放独立队列、重复关闭、迟到回调、取消任务、异常后任务池继续工作、加载过期、激励完成条件及原生回调主线程分发。
 
 Editor 使用 SDK 模拟，未执行 Android / iOS 原生打包或真实广告请求。目标设备的依赖解析、账号、广告展示和奖励回调需由接入项目实机验证。
+
+## 远端 Git 安装
+
+已通过 `https://github.com/juker74/MoveComponent.git#ADComponent` 实际安装，packages-lock.json 确认为 git 来源，解析提交 `0a5431da3ea0b410ac5083eaea91b70bab4dc1b1`。核心与示例全套 **47/47 通过**，结果 `/private/tmp/ad-git-results.xml`。后续提交仅补充本验证记录。
