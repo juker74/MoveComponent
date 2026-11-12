@@ -1,0 +1,6 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-magnite:0.0.13.1.0"/>
+        <androidPackage spec="com.magnite.sdk:ads-sdk:0.0.13"/>
+    </androidPackages>
+</dependencies>

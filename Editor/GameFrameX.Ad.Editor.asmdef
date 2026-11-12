@@ -1,0 +1,6 @@
+{
+  "name": "GameFrameX.Ad.Editor",
+  "references": ["GameFrameX.Ad.Runtime", "GameFrameX.Editor", "GameFrameX.Runtime"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

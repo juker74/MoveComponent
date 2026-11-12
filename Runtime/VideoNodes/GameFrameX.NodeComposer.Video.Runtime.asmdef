@@ -1,8 +1,0 @@
-{
-  "name": "GameFrameX.NodeComposer.Video.Runtime",
-  "rootNamespace": "GameFrameX.NodeComposer.Video",
-  "references": [
-    "GameFrameX.NodeComposer.Runtime"
-  ],
-  "noEngineReferences": true
-}

@@ -1,0 +1,9 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://artifact.op-mobile.opera.com/releases</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-opera:2.11.0.1.0"/>
+        <androidPackage spec="com.opera:opera-ads:2.11.0"/>
+    </androidPackages>
+</dependencies>

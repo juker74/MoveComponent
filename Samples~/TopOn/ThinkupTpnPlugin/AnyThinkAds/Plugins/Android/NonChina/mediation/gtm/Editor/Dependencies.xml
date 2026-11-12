@@ -1,0 +1,10 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-mintegral:17.1.71.1.0"/>
+        <androidPackage spec="com.mbridge.msdk.oversea:mbridge_android_sdk:17.1.71"/>
+        <androidPackage spec="androidx.recyclerview:recyclerview:1.1.0"/>
+    </androidPackages>
+</dependencies>

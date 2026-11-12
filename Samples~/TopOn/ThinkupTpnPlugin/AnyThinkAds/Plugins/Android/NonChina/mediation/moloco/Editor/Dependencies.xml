@@ -1,0 +1,6 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-moloco:4.11.1.1.0"/>
+        <androidPackage spec="com.moloco.sdk:moloco-sdk:4.11.1"/>
+    </androidPackages>
+</dependencies>

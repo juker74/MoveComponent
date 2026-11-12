@@ -1,0 +1,10 @@
+{
+  "name": "GameFrameX.Ad.TopOn.Sample",
+  "references": [
+    "GameFrameX.Ad.Runtime",
+    "GameFrameX.Runtime",
+    "GameFrameX.Event.Runtime",
+    "AnyThink"
+  ],
+  "autoReferenced": true
+}

@@ -1,96 +1,48 @@
-# MoveComponent
+# ADComponent
 
-可通过 Git URL 安装的私有 Unity UPM 源码仓库，包含完整的多端口节点编辑器、视频/UI 节点扩展、JSON 导入导出和影视流程驱动，并在 `Plugins/ParadoxNotion` 内置完整的 NodeCanvas / CanvasCore 源码与编辑器资源。仓库根目录的 `package.json` 就是包入口，不需要 `?path=`，也不需要导出 `.unitypackage`。
+可通过 Unity Package Manager 的 Git URL 安装的广告模块。沿用 GF 的 `ADComponent → IADManager → ADManager` 结构；模块更新与关闭交给 GF 生命周期。
 
-- 包名：`com.gameframex.unity.movecomponent`
-- 版本：`1.2.1`
-- Unity：`2022.3` 起，验证版本 `2022.3.62f3`；编辑器与驱动的验证结果，详见 [验证记录](Documentation~/Validation.md)。
-- 内置 CanvasCore：`FRAMEWORK_VERSION = 3.30`，保留 `ParadoxNotion` 与 `NodeCanvas` 程序集。
-- 保留现有命名空间、程序集名称与脚本 GUID，便于迁移原项目。
+```text
+https://github.com/juker74/MoveComponent.git#ADComponent
+```
+
+Unity 2022.3+。仓库是 UPM 包根目录，不是完整 Unity 项目。
 
 ## 安装
 
-1. 确认当前 Git 账号有此私有仓库的访问权限，并已配置可供 Unity 使用的 Git 凭据。URL 中不要写入 token；使用现有 Git 凭据管理器或系统钥匙串。
-2. 若目标项目已有 `Assets/Plugins/ParadoxNotion` 或其他 NodeCanvas / CanvasCore 副本，先将重复插件移出 `Assets` 并备份到工程外，再安装本包，避免重复 GUID、程序集和类型。插件已完整内置，无需另行安装。
-3. 将下面的 registry 合并到目标项目 `Packages/manifest.json` 的 `scopedRegistries` 数组，保留项目已有配置：
+先在宿主 `Packages/manifest.json` 合并 `Documentation~/project-manifest.registry.example.json` 中的 GameFrameX scoped registry，再通过 Package Manager → Add package from git URL 安装上述地址。私有仓库访问沿用本机 Git 凭据。
 
-```json
-{
-  "name": "GameFrameX",
-  "url": "https://gameframex.upm.alianblank.uk",
-  "scopes": ["com.gameframex.unity"]
-}
+已有项目若含同一广告模块，先将原 `Assets/Scripts/Framework/Advertising` 备份到工程外，再装包，避免重复类型和 GUID。包保留原脚本 GUID；TopOn 已迁移为独立示例程序集，原场景的 SerializeReference 平台配置与 Agent 类型名称需要重新选择后保存。不要同时保留两份 SDK。
+
+## 内容边界
+
+- `Runtime/Core`：平台无关接口、Manager、Helper 基类、任务队列、状态、事件。
+- `Runtime/Runtime`：Unity Component、AgentHelper 基类、主线程回调分发和 GF 事件转发。
+- `Editor`：通用 AD Inspector，通过反射发现宿主或示例提供的 Helper。
+- `Tests/Editor`：不引用 SDK 的核心回归测试。
+- `Samples~/TopOn`：TopOn 实现、完整项目内 ThinkupTpnPlugin SDK、空账号示例场景和 SDK 回归测试；仅手动导入示例后编译。
+
+核心不依赖 AnyThink、TopOn、Firebase、Singular 或具体游戏业务。GF 基础包和 Event 为必需依赖。未导出 Hotfix 业务、线上广告位、应用账号和平台配置。
+
+## TopOn 示例
+
+1. Package Manager 选择 ADComponent，导入 **TopOn Example**。
+2. 如果宿主没有 SDK，执行 **Tools → GameFrameX → AD → Install Sample TopOn SDK**。它将导入的 `ThinkupTpnPlugin` 移到厂商工具要求的 `Assets/ThinkupTpnPlugin`；目标已有文件时停止，不覆盖。SDK Manager 和原生构建脚本使用这个固定路径。
+3. 打开示例的 `Scenes/TopOnExample.unity`。场景已放入 GF Base、Event、AD 组件和示例操作面板。
+4. 在 ADComponent 的 TopOn Helper 中填写 Android / iOS AppId、AppKey，在 TopOnExample 中填写对应广告位。所有账号及广告位初始均为空。
+5. Play 后点击 Load，等待加载成功后点击 Play。Editor 仅为 SDK 模拟；真实广告、奖励和回调需要目标设备验证。
+
+原生依赖按宿主环境安装 EDM4U，通过 ThinkupTpnPlugin SDK Manager 配置相应网络及依赖。示例保留原 SDK 平台桥接与构建工具；这些内容全部隔离于 `Samples~`，不会随核心包启用。
+
+## 业务调用
+
+宿主配置 GF Base / Event / ADComponent，选定自己的 Helper 与各广告格式的请求/播放 Agent。业务通过 Component 发起加载及播放：
+
+```csharp
+ads.AddADRequest("my-platform", placementId, ADFormat.reward, "business", 0, 60f, userData);
+ads.PlayAD("my-platform", placementId, ADFormat.reward, sceneId, "business", 0, userData);
 ```
 
-4. 在 Unity **Window → Package Manager → + → Add package from git URL** 输入以下地址：
+通过 GF Event 订阅 `GameFrameX.Ad.Runtime.ADRequestSuccessEventArgs`、`ADPlaySuccessEventArgs` 和失败事件。激励发奖由宿主按成功事件和 UserData 关联处理。池化事件参数不要在回调结束后持有。模块不自动替业务补充广告请求。
 
-```text
-https://github.com/juker74/MoveComponent.git#v1.2.1
-```
-
-`package.json` 中声明的 GameFrameX 与 Unity 依赖会由 UPM 解析。包内的 registry 配置示例供宿主项目合并，UPM 不会从依赖包自动设置项目的 scoped registries。
-
-也可以先通过 **Add package from disk** 选择本仓库根目录的 `package.json`。如果不使用 GameFrameX registry，见 [依赖说明](Documentation~/Dependencies.md) 中完整的 Git 依赖安装方案。
-
-## 编辑与运行
-
-1. 通过 **Tools → GameFrameX → Node Composer → 创建图** 新建图，双击图资产打开编辑器。
-2. 添加视频、UI、数据、修改或条件节点，用控制线决定执行顺序，用带类型的数据端口传值；视频支持拖入 VideoClip、画面预览和多个帧输出，UI 支持类型选择及动态结果端口。
-3. 在工具栏导入/导出 JSON。Package Manager 的 **Samples → Graph Examples → Import** 提供可导入的示例图与短视频。
-4. 通过 **Tools → GameFrameX → Node Composer → 创建章节目录** 将多张 Graph 整理为有序章节，选择各章入口与默认起始章节，再导出目录和章图 JSON。详见 [章节目录](Documentation~/ChapterCatalog.md)。
-5. 在已配置 GameFrameX `BaseComponent` 的场景显式添加 `GameFrameX.Movie.Runtime.MovieComponent` 和 `Game.VideoFlow.FlowUiService`。MovieComponent 使用手动启动标记，由场景提供配置。绑定 Catalog Json、Chapter Graphs（章节 ID → 图 JSON）、Ui Service、Video Target 和 Clips，勾选 Play On Start 或由业务调用 `Play()`。Chapter Graphs 可以只预载部分章节；调用配置式 Play 时必须包含目录的默认起始章节，其余章节可稍后通过 `LoadChapter` 加载。
-6. 具体影视 UI 继承 `Game.Framework.UI.MovieUIForm`。项目 UI 接入层订阅 `FlowUiService.Opened`，按请求类型创建界面后调用 `Bind(request, form)`，订阅 `Closed` 清理界面。具体控件与业务预制体由目标项目提供。
-
-现代入口为 `MovieComponent → IMovieManager → MovieManager`：目录元数据、多个章节图缓存和单个执行章节分别管理，框架统一调用模块 Update/Shutdown。业务通过组件的 `LoadCatalog`、`LoadChapter`、`PlayChapter`、`Stop` 与卸载 API 控制流程；`GraphKey` 只交给宿主资源系统解析，不会自动读取文件或播放下一章。完整场景绑定与业务调用见 [影视流程](Documentation~/VideoFlow.md)。
-
-Movie 运行时通过可选 `EventRaised` 通知故障与诊断，由宿主选择 GFX、Unity 或其他日志输出；未订阅时照常运行。现有 GFX 模块与 UGUI 依赖保留。接入示例见 [故障诊断与宿主日志](Documentation~/VideoFlow.md#故障诊断与宿主日志)。
-
-UI/逻辑节点可以附属于来源视频。数据节点是每次章节播放共享的值容器：图内视频循环保留当前值，再次 `PlayChapter`（包括同章重播）恢复章节初始值。旧 `VideoFlowDriver`、`VideoFlowHost` 和 FSM 接入保留为兼容入口；每个实例只能有一个更新来源。Runtime 不依赖 UnityEditor 或 NodeCanvas 编辑器。
-
-## 目录
-
-| 目录 | 内容 |
-| --- | --- |
-| `Runtime/NodeComposer` | 图协议、严格 JSON、类型注册、数据/条件/修改节点定义 |
-| `Runtime/VideoNodes` | 视频、帧端口、UI 类型配置、动态分支和章节目录协议 |
-| `Runtime/VideoFlow` | IMovieManager / MovieManager、章节缓存、执行状态机、兼容驱动与播放器/UI 服务 |
-| `Runtime/Integrations/GameFrameX` | MovieComponent 场景入口、MovieUIForm 基类与兼容 FSM 适配 |
-| `Editor/NodeComposer` | 节点画布、多端口连线、属性配置、JSON 文件操作 |
-| `Editor/VideoNodes` | 视频预览、资源拖拽、帧编辑、影视 UI 类选择、分支与章节目录编辑 |
-| `Plugins/ParadoxNotion` | 完整 NodeCanvas / CanvasCore、编辑器资源及原始 FullSerializer MIT 许可文本 |
-| `Tests/Editor` | 协议、驱动、Unity 接入及编辑器测试和测试视频 |
-| `Samples~` | 可通过 Package Manager 导入的示例 |
-| `Documentation~` | 安装、依赖 Git 地址、模块说明与验证记录 |
-| `Tools~` | 无额外 Python 依赖的包结构验证脚本 |
-
-## 进一步使用
-
-- [安装、Git 发布与旧项目迁移](Documentation~/Installation.md)
-- [完整依赖、Git 地址与版本](Documentation~/Dependencies.md)
-- [节点编辑器](Documentation~/NodeComposer.md)
-- [视频/UI 扩展](Documentation~/VideoNodes.md)
-- [章节目录编辑与整批 JSON 交换](Documentation~/ChapterCatalog.md)
-- [Movie 模块、UI 接入与值类型扩展](Documentation~/VideoFlow.md)
-- [验证记录](Documentation~/Validation.md)
-
-对包结构执行检查：
-
-```sh
-python3 Tools~/validate_package.py
-```
-
-具体 UI、项目资源加载、游戏流程配置不属于包内固定玩法；包提供完整编辑、导出、解析和运行能力及相应接入边界。
-
-## 引用、来源与作者
-
-本模块整理自基于 [GameFrameX.Unity](https://github.com/GameFrameX/GameFrameX.Unity) 的本地工程，提供节点编辑、视频扩展与流程驱动能力。保留原有命名空间、程序集身份和脚本 GUID。框架来源、内置插件、外部依赖与设计参考分别列出如下：
-
-| 类型 | 项目或文章 | 作者 / 维护者 | 用途 |
-| --- | --- | --- | --- |
-| 框架来源 | [GameFrameX.Unity](https://github.com/GameFrameX/GameFrameX.Unity) / [GameFrameX](https://github.com/GameFrameX) | Blank（包元数据署名）、GameFrameX 贡献者 | 模块结构、FSM、UI 及相关基础设施 |
-| 内置插件 | [NodeCanvas / CanvasCore](https://nodecanvas.paradoxnotion.com/) | Gavalakis Evangelos / ParadoxNotion | 完整源码与资源位于 `Plugins/ParadoxNotion`，作为节点画布与编辑器基础 |
-| 设计参考 | [MissionSystem](https://github.com/529324416/MissionSystem) | PrinceBiscuit（GitHub：[529324416](https://github.com/529324416)） | 节点编辑与图结构设计的参考项目 |
-| 设计参考 | [用户提供的知乎文章](https://zhuanlan.zhihu.com/p/718702259) | 作者以原文署名为准（本次未能核实） | 早期设计讨论参考 |
-| Git 忽略模板 | [github/gitignore — Unity.gitignore](https://github.com/github/gitignore/blob/main/Unity.gitignore) | GitHub gitignore 社区贡献者 | 标准 Unity 忽略规则，附加本仓库工具和产物规则 |
-
-此私有仓库由 [juker74](https://github.com/juker74) 维护。依赖模块的具体 Git 地址与版本见 [Dependencies.md](Documentation~/Dependencies.md)，来源与许可范围见 [Third Party Notices.md](Third%20Party%20Notices.md)。[LICENSE.md](LICENSE.md) 保留 GameFrameX 来源代码的 Apache-2.0 文本，不将内置 NodeCanvas / CanvasCore 声明为 Apache-2.0；插件保留原作者署名与适用许可，FullSerializer 的原始 MIT 许可文本随源码保留。
+依赖及来源见 [Dependencies](Documentation~/Dependencies.md) 和 [Third Party Notices](Third%20Party%20Notices.md)。验证结果见 [Validation](Documentation~/Validation.md)。

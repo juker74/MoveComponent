@@ -1,0 +1,6 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-applovin:13.6.3.1.0"/>
+        <androidPackage spec="com.applovin:applovin-sdk:13.6.3"/>
+    </androidPackages>
+</dependencies>

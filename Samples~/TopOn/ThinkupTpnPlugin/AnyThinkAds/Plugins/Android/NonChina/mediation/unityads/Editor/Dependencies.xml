@@ -1,0 +1,6 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-unityads:4.20.0.1.0"/>
+        <androidPackage spec="com.unity3d.ads:unity-ads:4.20.0"/>
+    </androidPackages>
+</dependencies>

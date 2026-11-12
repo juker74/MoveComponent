@@ -1,0 +1,6 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-bigo:6.0.0.1.0"/>
+        <androidPackage spec="com.bigossp:bigo-ads:6.0.0"/>
+    </androidPackages>
+</dependencies>

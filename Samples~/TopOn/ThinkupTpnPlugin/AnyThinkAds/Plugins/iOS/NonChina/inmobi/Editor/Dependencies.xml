@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <dependencies>
+            <iosPods>
+                <iosPod name="TPNMediationInmobiAdapter" version="11.4.1.2.0" />
+            </iosPods>
+        </dependencies>

@@ -1,0 +1,9 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://verve.jfrog.io/artifactory/verve-gradle-release</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-pubnative:3.8.1.1.0"/>
+        <androidPackage spec="net.pubnative:hybid.sdk:3.8.1"/>
+    </androidPackages>
+</dependencies>

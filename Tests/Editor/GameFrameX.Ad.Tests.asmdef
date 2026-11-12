@@ -1,0 +1,16 @@
+{
+  "name": "GameFrameX.Ad.Tests",
+  "references": [
+    "GameFrameX.Ad.Runtime",
+    "GameFrameX.Ad.Editor",
+    "GameFrameX.Runtime",
+    "GameFrameX.Event.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}

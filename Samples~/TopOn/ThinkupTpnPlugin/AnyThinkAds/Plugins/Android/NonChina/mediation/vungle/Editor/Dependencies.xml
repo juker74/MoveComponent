@@ -1,0 +1,8 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-vungle:7.7.7.1.0"/>
+        <androidPackage spec="com.vungle:vungle-ads:7.7.7"/>
+        <androidPackage spec="com.google.android.gms:play-services-basement:18.1.0"/>
+        <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1"/>
+    </androidPackages>
+</dependencies>

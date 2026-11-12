@@ -1,0 +1,9 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://artifactory.bidmachine.io/bidmachine</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-bidmachine:3.7.1.1.0"/>
+        <androidPackage spec="io.bidmachine:ads:3.7.1"/>
+    </androidPackages>
+</dependencies>

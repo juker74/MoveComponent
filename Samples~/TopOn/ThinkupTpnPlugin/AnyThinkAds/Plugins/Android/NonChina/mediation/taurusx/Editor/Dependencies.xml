@@ -1,0 +1,9 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://artifact.taurusx.com/artifactory/taurusx-sdk</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-taurusx:1.18.4.1.0"/>
+        <androidPackage spec="com.taurusx.tax:ads:1.18.4"/>
+    </androidPackages>
+</dependencies>

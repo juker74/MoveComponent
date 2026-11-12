@@ -1,0 +1,6 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-mytarget:5.27.1.1.0"/>
+        <androidPackage spec="com.my.target:mytarget-sdk:5.27.1"/>
+    </androidPackages>
+</dependencies>

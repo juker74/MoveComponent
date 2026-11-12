@@ -1,0 +1,10 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://imobile-maio.github.io/maven</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-maio:1.1.16.1.0"/>
+        <androidPackage spec="com.maio:android-sdk:1.1.16@aar"/>
+        <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1"/>
+    </androidPackages>
+</dependencies>

@@ -1,0 +1,15 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://s3.amazonaws.com/smaato-sdk-releases/</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-smaato:22.7.2.1.2"/>
+        <androidPackage spec="com.smaato.android.sdk:smaato-sdk:22.7.2"/>
+        <androidPackage spec="com.smaato.android.sdk:smaato-sdk-banner:22.7.2"/>
+        <androidPackage spec="com.smaato.android.sdk:smaato-sdk-interstitial:22.7.2"/>
+        <androidPackage spec="com.smaato.android.sdk:smaato-sdk-rewarded-ads:22.7.2"/>
+        <androidPackage spec="com.smaato.android.sdk:smaato-sdk-native:22.7.2"/>
+        <androidPackage spec="com.smaato.android.sdk:smaato-sdk-in-app-bidding:22.7.2"/>
+        <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1"/>
+    </androidPackages>
+</dependencies>

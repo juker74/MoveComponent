@@ -1,28 +1,10 @@
-# Third-party sources and license scope
+# 来源与许可
 
-This private repository contains the MoveComponent sources exported from GameFrameX.Unity and a complete bundled ParadoxNotion plugin tree. Existing namespaces, assembly identities and script GUIDs are preserved.
+- 广告模块来自 InteractiveMovieGame 的 `Assets/Scripts/Framework/Advertising`。保留现有命名空间与脚本 GUID。项目业务层（Hotfix、存档、Firebase、Singular、平台广告位映射）不在本包内。
+- GameFrameX：Blank / GameFrameX，https://github.com/GameFrameX 。框架作为依赖解析，原许可由各依赖包保留。
+- TopOn / ThinkupTpnPlugin：随项目提供的第三方 SDK（Integration Manager 2.2.0），仅位于 `Samples~/TopOn/ThinkupTpnPlugin`，原版权归其权利人所有；本仓库不为第三方 SDK 重新授权。保留原有源码、资源、二进制和署名。
+- 示例为可选内容，核心程序集没有 AnyThink / TopOn 引用。
 
-The Apache-2.0 text retained in LICENSE.md applies to the GameFrameX-derived MoveComponent sources. It does not assign Apache-2.0 to the bundled NodeCanvas / CanvasCore plugin. Package metadata points to this notice because the repository contains components with separate license terms; their original authorship and applicable licenses remain in place.
+根目录保留原 MoveComponent 仓库 Apache-2.0 许可文本（LICENSE.md）；该文本不替代第三方 SDK 自身许可。
 
-## Bundled NodeCanvas / CanvasCore
-
-The complete existing NodeCanvas and CanvasCore source and resource folders are included under `Plugins/ParadoxNotion`. The original README credits **Gavalakis Evangelos**; the project and publisher are **ParadoxNotion**. The bundled CanvasCore source reports `FRAMEWORK_VERSION = 3.30`. Official source: https://nodecanvas.paradoxnotion.com/ . No separate plugin installation is required.
-
-NodeCanvas / CanvasCore retains its original author's applicable licensing terms. Its inclusion in this private repository does not relicense the plugin under the root Apache-2.0 text.
-
-NodeCanvas uses a modified version of Full Serializer under the MIT License, as stated in the original `Plugins/ParadoxNotion/NodeCanvas/README.txt`. The original FullSerializer MIT copyright and license text is retained at:
-
-`Plugins/ParadoxNotion/CanvasCore/Common/Runtime/Serialization/Full Serializer/License (FullSerializer).txt`
-
-## External package dependencies
-
-SimpleJSON, GameFrameX packages, Unity UGUI, TextMeshPro and Test Framework remain external dependencies; their sources are not copied into this repository and remain under their respective licenses. See `Documentation~/Dependencies.md` and `Documentation~/dependency-sources.json` for sources, pinned dependency versions and bundled-plugin details. See `Documentation~/Validation.md` for the separate validation records of each MoveComponent version.
-
-## Sources and credits
-
-- GameFrameX.Unity / GameFrameX — Blank (as credited by package metadata) and contributors: https://github.com/GameFrameX/GameFrameX.Unity
-- NodeCanvas / CanvasCore — Gavalakis Evangelos / ParadoxNotion: https://nodecanvas.paradoxnotion.com/ (complete source and resources bundled in this private repository).
-- Full Serializer — Jacob Dufault (copyright 2014); original MIT notice retained at the path above.
-- MissionSystem — PrinceBiscuit (GitHub 529324416): https://github.com/529324416/MissionSystem (design reference).
-- User-provided article: https://zhuanlan.zhihu.com/p/718702259 (design reference; author could not be independently verified).
-- Unity.gitignore — GitHub gitignore contributors: https://github.com/github/gitignore/blob/main/Unity.gitignore (standard template used by .gitignore, with local additions).
+SDK 副本仅作两项包化调整：清空 plugin_setting_data.json 的 AdMob 账号字段；移除 Integration Manager 未使用的 UnityEngine.UI using，避免额外 UGUI 依赖。其余内容保留项目副本。

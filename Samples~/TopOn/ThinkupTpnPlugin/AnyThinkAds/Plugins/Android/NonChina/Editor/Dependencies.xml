@@ -1,0 +1,12 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://jfrog.anythinktech.com/artifactory/overseas_sdk</repository>
+            <repository>https://jfrog.anythinktech.com/artifactory/debugger</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:core-tpn:6.6.41"/>
+        <androidPackage spec="com.thinkup.sdk:debugger-ui:1.1.3"/>
+        <androidPackage spec="androidx.appcompat:appcompat:1.6.1"/>
+        <androidPackage spec="androidx.browser:browser:1.4.0"/>
+    </androidPackages>
+</dependencies>

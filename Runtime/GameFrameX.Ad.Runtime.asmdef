@@ -1,0 +1,17 @@
+{
+  "name": "GameFrameX.Ad.Runtime",
+  "rootNamespace": "",
+  "references": [
+    "GameFrameX.Runtime",
+    "GameFrameX.Event.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

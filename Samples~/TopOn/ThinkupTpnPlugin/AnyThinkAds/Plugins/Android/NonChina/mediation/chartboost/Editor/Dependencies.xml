@@ -1,0 +1,23 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://cboost.jfrog.io/artifactory/chartboost-ads</repository>
+            <repository>https://cboost.jfrog.io/artifactory/chartboost-mediation</repository>
+            <repository>https://cboost.jfrog.io/artifactory/chartboost-core</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-chartboost:9.12.0.1.1"/>
+        <androidPackage spec="com.chartboost:chartboost-sdk:9.12.0"/>
+        <androidPackage spec="com.chartboost:chartboost-mediation-sdk:5.3.0"/>
+        <androidPackage spec="com.chartboost:chartboost-core-sdk:1.1.0"/>
+        <androidPackage spec="com.chartboost:chartboost-mediation-adapter-chartboost:5.9.11.0.0"/>
+        <androidPackage spec="androidx.media3:media3-exoplayer:1.4.1"/>
+        <androidPackage spec="androidx.media3:media3-ui:1.4.1"/>
+        <androidPackage spec="com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0"/>
+        <androidPackage spec="com.squareup.okhttp3:logging-interceptor:4.11.0"/>
+        <androidPackage spec="com.squareup.okhttp3:okhttp:4.12.0"/>
+        <androidPackage spec="com.squareup.retrofit2:converter-scalars:2.9.0"/>
+        <androidPackage spec="com.squareup.retrofit2:retrofit:2.9.0"/>
+        <androidPackage spec="org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"/>
+        <androidPackage spec="org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"/>
+    </androidPackages>
+</dependencies>

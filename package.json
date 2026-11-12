@@ -1,56 +1,26 @@
 {
-  "name": "com.gameframex.unity.movecomponent",
-  "version": "1.2.1",
-  "displayName": "MoveComponent",
-  "description": "Typed multi-port node composer, chapter catalog editor and JSON bundles, video/UI nodes and GF movie module with multiple cached chapters and one executing graph. Bundles complete ParadoxNotion NodeCanvas / CanvasCore sources and editor resources.",
+  "name": "com.gameframex.unity.adcomponent",
+  "version": "1.0.0",
+  "displayName": "ADComponent",
+  "description": "GameFrameX advertising core: platform-neutral request/play queues, lifecycle, events and Unity inspector. TopOn adapter and SDK are opt-in samples.",
   "unity": "2022.3",
   "license": "SEE LICENSE IN Third Party Notices.md",
-  "keywords": [
-    "node-editor",
-    "video",
-    "interactive-movie",
-    "graph",
-    "state-machine",
-    "gameframex"
-  ],
-  "dependencies": {
-    "com.gameframex.unity": "2.5.4",
-    "com.gameframex.unity.json.simplejson": "1.1.2",
-    "com.gameframex.unity.ui": "2.11.2",
-    "com.gameframex.unity.ui.ugui": "2.6.3",
-    "com.gameframex.unity.fsm": "1.2.0",
-    "com.unity.ugui": "1.0.0",
-    "com.unity.textmeshpro": "3.0.9",
-    "com.unity.modules.audio": "1.0.0",
-    "com.unity.modules.video": "1.0.0",
-    "com.unity.modules.imgui": "1.0.0",
-    "com.unity.modules.imageconversion": "1.0.0",
-    "com.unity.modules.uielements": "1.0.0",
-    "com.unity.modules.ai": "1.0.0",
-    "com.unity.modules.physics": "1.0.0",
-    "com.unity.modules.physics2d": "1.0.0",
-    "com.gameframex.unity.litjson": "1.2.2",
-    "com.gameframex.unity.readassets": "1.2.1",
-    "com.gameframex.unity.cysharp.unitask": "2.6.2",
-    "com.gameframex.unity.asset": "3.2.0",
-    "com.gameframex.unity.event": "1.4.0",
-    "com.gameframex.unity.localization": "2.3.2",
-    "com.gameframex.unity.setting": "1.6.1",
-    "com.gameframex.unity.tuyoogame.yooasset": "2.9.4"
+  "author": {
+    "name": "juker74"
   },
-  "samples": [
-    {
-      "displayName": "Graph Examples",
-      "description": "Data/control cycles, video cycles, frame-triggered UI branches and a short preview clip.",
-      "path": "Samples~/GraphExamples"
-    }
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/juker74/MoveComponent.git"
   },
-  "homepage": "https://github.com/juker74/MoveComponent",
-  "bugs": {
-    "url": "https://github.com/juker74/MoveComponent/issues"
-  }
+  "dependencies": {
+    "com.gameframex.unity": "2.5.4",
+    "com.gameframex.unity.event": "1.4.0"
+  },
+  "samples": [
+    {
+      "displayName": "TopOn Example",
+      "description": "Optional TopOn adapters, ThinkupTpnPlugin SDK and configured example scene. Contains no production account IDs.",
+      "path": "Samples~/TopOn"
+    }
+  ]
 }

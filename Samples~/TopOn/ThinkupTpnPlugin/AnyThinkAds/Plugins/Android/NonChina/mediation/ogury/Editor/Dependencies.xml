@@ -1,0 +1,9 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://maven.ogury.co</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-ogury:5.2.0.1.0"/>
+        <androidPackage spec="co.ogury:ogury-sdk:5.2.0"/>
+    </androidPackages>
+</dependencies>

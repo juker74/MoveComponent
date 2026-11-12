@@ -1,0 +1,9 @@
+{
+  "name": "GameFrameX.Ad.TopOn.Editor",
+  "references": [
+    "GameFrameX.Ad.TopOn.Sample"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

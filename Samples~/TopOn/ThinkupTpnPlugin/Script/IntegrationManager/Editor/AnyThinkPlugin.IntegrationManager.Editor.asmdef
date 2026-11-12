@@ -1,0 +1,8 @@
+{
+    "name": "ThinkupTpnPlugin.Script.IntegrationManager.Editor",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

@@ -1,0 +1,12 @@
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://android-sdk.is.com/</repository>
+        </repositories>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-ironsource:9.2.0.1.3"/>
+        <androidPackage spec="com.unity3d.ads-mediation:mediation-sdk:9.2.0"/>
+        <androidPackage spec="com.google.android.gms:play-services-appset:16.0.2"/>
+        <androidPackage spec="com.google.android.gms:play-services-ads-identifier:18.0.1"/>
+        <androidPackage spec="com.google.android.gms:play-services-basement:18.1.0"/>
+    </androidPackages>
+</dependencies>

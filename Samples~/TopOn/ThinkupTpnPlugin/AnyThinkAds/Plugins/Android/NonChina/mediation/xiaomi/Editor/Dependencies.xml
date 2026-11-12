@@ -1,0 +1,6 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-xiaomi:4.0.9.1.1.0"/>
+        <androidPackage spec="com.mi.ads:columbus-sdk:4.0.9.1"/>
+    </androidPackages>
+</dependencies>

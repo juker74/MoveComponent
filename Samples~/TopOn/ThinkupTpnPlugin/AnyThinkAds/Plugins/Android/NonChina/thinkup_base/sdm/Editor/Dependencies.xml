@@ -1,0 +1,6 @@
+<dependencies>
+    <androidPackages>
+        <androidPackage spec="com.thinkup.sdk:adapter-tpn-agt:6.5.81.1.0"/>
+        <androidPackage spec="com.aggregatortech.sdk:agt-ovsdk:6.5.81"/>
+    </androidPackages>
+</dependencies>
